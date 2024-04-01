@@ -1,5 +1,5 @@
 numpy
-jupyter notebook
+jupyter
 librosa
 matplotlib
 scipy
