@@ -9,6 +9,8 @@ pandas
 scikit-learn
 mplcursors
 torch
+torchaudio
 torchvision
+torchsummary
 tensorboard_logger
 protobuf==5.26.1

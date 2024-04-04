@@ -1,0 +1,17 @@
+notebook
+ipython
+librosa
+jupyter
+scipy
+matplotlib
+tqdm
+pandas
+scikit-learn
+mplcursors
+torch
+torchaudio
+torchvision
+tensorboard_logger
+protobuf==5.26.1
+boto3
+botocore
