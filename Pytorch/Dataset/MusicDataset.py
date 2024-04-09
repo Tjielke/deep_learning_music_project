@@ -5,9 +5,10 @@ import torchaudio
 from torch.utils.data import Dataset, DataLoader
 
 class MusicDataset(Dataset):
-    def __init__(self, data_dir, dataframe,transformation,
+    def __init__(self, data_dir, dataframe,instrument_list,transformation,
                  target_sample_rate, num_samples, device, max_size_bytes=None):
         self.data_dir = data_dir
+        self.instrument_list = instrument_list
         self.filenames = [filename for filename in os.listdir(data_dir) if filename.endswith('.wav')]
         self.dataframe = dataframe
         self.device = device
@@ -57,7 +58,8 @@ class MusicDataset(Dataset):
         return signal
 
     def _get_audio_sample_label(self, item):
-        return self.dataframe.iloc[item, 2]
+        label = self.dataframe.iloc[item, 2]
+        return self.instrument_list.index(label)
 
     def __getitem__(self, idx):
         filename = self.filenames[idx]
