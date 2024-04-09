@@ -57,7 +57,7 @@ class MusicDataset(Dataset):
         return signal
 
     def _get_audio_sample_label(self, item):
-        return self.dataframe.iloc[item, 3]
+        return self.dataframe.iloc[item, 2]
 
     def __getitem__(self, idx):
         filename = self.filenames[idx]
@@ -71,6 +71,6 @@ class MusicDataset(Dataset):
         signal = self._right_pad_if_necessary(signal)
         signal = self.transformation(signal)
 
-        return signal, label  # Assuming labels are the filenames in this case
+        return signal, label
 
 

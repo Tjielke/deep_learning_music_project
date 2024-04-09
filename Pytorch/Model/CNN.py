@@ -50,7 +50,7 @@ class CNNNetwork(nn.Module):
             nn.MaxPool2d(kernel_size=2)
         )
         self.flatten = nn.Flatten()
-        self.linear = nn.Linear(in_features=128*5*4, out_features=128)
+        self.linear = nn.Linear(in_features=128*5*4, out_features=11)
         self.softmax = nn.Softmax(dim=1)
 
     def forward(self, input_data):
