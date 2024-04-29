@@ -3,3 +3,4 @@ jupyter
 librosa
 matplotlib
 scipy
+torch
