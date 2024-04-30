@@ -6,32 +6,35 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import pandas as pd
 
-##Import file
+
 your_path = 'C:/Users/20182877/JADS C schijf/Year_2/Semester_2/Deep Learning/Data/'
 
-list_of_csv_paths = [your_path + 'HF1/HF1/Songs/Haslebuskane/Aligned annotations/Ground truth/Haslebuskane_happy.csv',
-                     your_path + 'HF1/HF1/Songs/Haslebuskane/Aligned annotations/Ground truth/Haslebuskane_angry.csv',
-                     your_path + 'HF1/HF1/Songs/Haslebuskane/Aligned annotations/Ground truth/Haslebuskane_sad.csv',
-                     your_path + 'HF1/HF1/Songs/Haslebuskane/Aligned annotations/Ground truth/Haslebuskane_tender.csv',
-                     your_path + 'HF1/HF1/Songs/Haslebuskane/Haslebuskane_original 10-Jul-2020 12-07-28']
+list_of_csv_paths = [your_path + 'HF1/HF1/Songs/Haslebuskane/Aligned annotations/Ground truth/Haslebuskane_happy.csv']#,
+                     # your_path + 'HF1/HF1/Songs/Haslebuskane/Aligned annotations/Ground truth/Haslebuskane_angry.csv',
+                     # your_path + 'HF1/HF1/Songs/Haslebuskane/Aligned annotations/Ground truth/Haslebuskane_sad.csv',
+                     # your_path + 'HF1/HF1/Songs/Haslebuskane/Aligned annotations/Ground truth/Haslebuskane_tender.csv',
+                     # your_path + 'HF1/HF1/Songs/Haslebuskane/Haslebuskane_original 10-Jul-2020 12-07-28.csv']
 
-list_of_wav_paths = [your_path + 'HF1/HF1/Songs/Haslebuskane/Audio files/Haslebuskane_happy.wav',
-                     your_path + 'HF1/HF1/Songs/Haslebuskane/Audio files/Haslebuskane_angry.wav',
-                     your_path + 'HF1/HF1/Songs/Haslebuskane/Audio files/Haslebuskane_sad.wav',
-                     your_path + 'HF1/HF1/Songs/Haslebuskane/Audio files/Haslebuskane_tender.wav',
-                     your_path + 'HF1/HF1/Songs/Haslebuskane/Audio files/Haslebuskane_original.wav']
+list_of_wav_paths = [your_path + 'HF1/HF1/Songs/Haslebuskane/Audio files/Haslebuskane_happy.wav']#,
+                     # your_path + 'HF1/HF1/Songs/Haslebuskane/Audio files/Haslebuskane_angry.wav',
+                     # your_path + 'HF1/HF1/Songs/Haslebuskane/Audio files/Haslebuskane_sad.wav',
+                     # your_path + 'HF1/HF1/Songs/Haslebuskane/Audio files/Haslebuskane_tender.wav',
+                     # your_path + 'HF1/HF1/Songs/Haslebuskane/Audio files/Haslebuskane_original.wav']
 
 
-def compute_onset_lists(list_of_csv_paths, list_of_wav_paths):
+
+def compute_and_save_spect_target_dataframes(list_of_csv_paths, list_of_wav_paths, your_path):
     """
-    Computes onset lists for each CSV and WAV file path in the provided lists.
+    Computes start_end_spect_target dataframes for each CSV and WAV file path in the provided lists
+    and saves them as CSV files in the specified location.
 
     Parameters:
     - list_of_csv_paths (list): A list of file paths to the CSV files containing the annotations.
     - list_of_wav_paths (list): A list of file paths to the WAV audio files.
+    - your_path (str): The path where the dataframes will be saved as CSV files.
 
     Returns:
-    - dict: A dictionary mapping each file name (after the last slash in the WAV file path) to its corresponding onset list.
+    - list of str: A list of messages confirming the successful saving of each file.
 
     Raises:
     - ValueError: If the lengths of the CSV and WAV file path lists do not match.
@@ -40,7 +43,8 @@ def compute_onset_lists(list_of_csv_paths, list_of_wav_paths):
     if len(list_of_csv_paths) != len(list_of_wav_paths):
         raise ValueError("The lengths of the CSV and WAV file path lists must be equal.")
 
-    onset_lists = {}
+    # Initialize a list to hold confirmation messages
+    confirmation_messages = []
 
     # Iterate over each pair of CSV and WAV file paths
     for csv_path, wav_path in zip(list_of_csv_paths, list_of_wav_paths):
@@ -56,16 +60,6 @@ def compute_onset_lists(list_of_csv_paths, list_of_wav_paths):
 
         # Compute the Mel spectrogram
         mel_spectrogram = librosa.feature.melspectrogram(y=y, sr=sr, n_fft=64, hop_length=64, n_mels=254)
-
-        # # Convert the Mel spectrogram to decibel scale (optional)
-        # mel_spectrogram_db = librosa.power_to_db(mel_spectrogram, ref=np.max)
-        #
-        # # (Optional) Plot the Mel spectrogram
-        # plt.figure(figsize=(10, 4))
-        # librosa.display.specshow(mel_spectrogram_db, sr=sr, x_axis='time', y_axis='mel')
-        # plt.colorbar(format='%+2.0f dB')
-        # plt.title('Mel Spectrogram')
-        # plt.show()
 
         # Initialize a DataFrame to hold the start, end samples, spectrogram, and onset data
         start_end_spect_target = pd.DataFrame(columns=['Start sample', 'End sample', 'Spectrogram', 'onset'])
@@ -86,9 +80,14 @@ def compute_onset_lists(list_of_csv_paths, list_of_wav_paths):
             # Update 'onset' column to 1 where mask is True
             start_end_spect_target.loc[mask, 'onset'] = 1
 
-        # Add the computed onset list to the dictionary using the file name as the key
-        onset_lists[file_name] = onset_list
+        # Save the computed start_end_spect_target DataFrame as a CSV file
+        csv_save_path = f"{your_path}/{file_name}_start_end_spect_target.csv"
+        start_end_spect_target.to_csv(csv_save_path, index=False)
 
-    return onset_lists
+        # Add a confirmation message to the list
+        confirmation_messages.append(f"File '{csv_save_path}' saved successfully.")
+
+    return confirmation_messages
 
 
+compute_and_save_spect_target_dataframes(list_of_csv_paths, list_of_wav_paths, your_path)

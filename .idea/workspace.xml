@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="0173393e-eda8-4031-9256-1797ad9f8d32" name="Changes" comment="Incredible changes, my goodness. Main issue was the installing of packages and the dependencies between the scripts, fixed those and now trying to make the main.py work" />
+    <list default="true" id="0173393e-eda8-4031-9256-1797ad9f8d32" name="Changes" comment="Incredible changes, my goodness. Main issue was the installing of packages and the dependencies between the scripts, fixed those and now trying to make the main.py work">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Tjielke/pre_processing.py" beforeDir="false" afterPath="$PROJECT_DIR$/Tjielke/pre_processing.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -110,7 +113,7 @@
       <workItem from="1712997597026" duration="864000" />
       <workItem from="1713795481535" duration="418000" />
       <workItem from="1714374497757" duration="7360000" />
-      <workItem from="1714464360640" duration="8330000" />
+      <workItem from="1714464360640" duration="10852000" />
     </task>
     <task id="LOCAL-00001" summary="updated the requirements file with required packages">
       <created>1710422295441</created>
@@ -140,7 +143,14 @@
       <option name="project" value="LOCAL" />
       <updated>1714472048520</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Incredible changes, my goodness. Main issue was the installing of packages and the dependencies between the scripts, fixed those and now trying to make the main.py work">
+      <created>1714480211524</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1714480211524</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -164,7 +174,7 @@
     <option name="LAST_COMMIT_MESSAGE" value="Incredible changes, my goodness. Main issue was the installing of packages and the dependencies between the scripts, fixed those and now trying to make the main.py work" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/Assignment$pre_processing.coverage" NAME="pre_processing Coverage Results" MODIFIED="1714479271930" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Tjielke" />
+    <SUITE FILE_PATH="coverage/Assignment$pre_processing.coverage" NAME="pre_processing Coverage Results" MODIFIED="1714483620426" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Tjielke" />
     <SUITE FILE_PATH="coverage/Assignment$main.coverage" NAME="main Coverage Results" MODIFIED="1714469406954" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Tjielke" />
   </component>
 </project>
