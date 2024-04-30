@@ -113,7 +113,7 @@
       <workItem from="1712997597026" duration="864000" />
       <workItem from="1713795481535" duration="418000" />
       <workItem from="1714374497757" duration="7360000" />
-      <workItem from="1714464360640" duration="12251000" />
+      <workItem from="1714464360640" duration="14437000" />
     </task>
     <task id="LOCAL-00001" summary="updated the requirements file with required packages">
       <created>1710422295441</created>
@@ -157,7 +157,14 @@
       <option name="project" value="LOCAL" />
       <updated>1714483849375</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Created a magnificently working function for preprocessing the wav files together with the csv files. The function creates a dataframe in which the onset times, the start and end of the sample are connected to the spectogram. This is subsequently saved in the path of your choosing">
+      <created>1714485274619</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1714485274619</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -182,7 +189,7 @@
     <option name="LAST_COMMIT_MESSAGE" value="Created a magnificently working function for preprocessing the wav files together with the csv files. The function creates a dataframe in which the onset times, the start and end of the sample are connected to the spectogram. This is subsequently saved in the path of your choosing" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/Assignment$pre_processing.coverage" NAME="pre_processing Coverage Results" MODIFIED="1714483620426" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Tjielke" />
+    <SUITE FILE_PATH="coverage/Assignment$pre_processing.coverage" NAME="pre_processing Coverage Results" MODIFIED="1714485299046" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Tjielke" />
     <SUITE FILE_PATH="coverage/Assignment$main.coverage" NAME="main Coverage Results" MODIFIED="1714469406954" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Tjielke" />
   </component>
 </project>
