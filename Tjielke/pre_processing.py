@@ -1,25 +1,91 @@
 import librosa
 import librosa.display
-import numpy as np
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
 import pandas as pd
 
 
 your_path = 'C:/Users/20182877/JADS C schijf/Year_2/Semester_2/Deep Learning/Data/'
 
-list_of_csv_paths = [your_path + 'HF1/HF1/Songs/Haslebuskane/Aligned annotations/Ground truth/Haslebuskane_happy.csv']#,
-                     # your_path + 'HF1/HF1/Songs/Haslebuskane/Aligned annotations/Ground truth/Haslebuskane_angry.csv',
-                     # your_path + 'HF1/HF1/Songs/Haslebuskane/Aligned annotations/Ground truth/Haslebuskane_sad.csv',
-                     # your_path + 'HF1/HF1/Songs/Haslebuskane/Aligned annotations/Ground truth/Haslebuskane_tender.csv',
-                     # your_path + 'HF1/HF1/Songs/Haslebuskane/Haslebuskane_original 10-Jul-2020 12-07-28.csv']
+list_of_csv_paths = [your_path + 'HF1/HF1/Songs/Haslebuskane/Aligned annotations/Ground truth/Haslebuskane_happy.csv',
+                     your_path + 'HF1/HF1/Songs/Haslebuskane/Aligned annotations/Ground truth/Haslebuskane_angry.csv',
+                     your_path + 'HF1/HF1/Songs/Haslebuskane/Aligned annotations/Ground truth/Haslebuskane_sad.csv',
+                     your_path + 'HF1/HF1/Songs/Haslebuskane/Aligned annotations/Ground truth/Haslebuskane_tender.csv',
+                     your_path + 'HF1/HF1/Songs/Haslebuskane/Haslebuskane_original 10-Jul-2020 12-07-28.csv'
+                     your_path + 'HF1/HF1/Songs/Havbrusen/Aligned annotations/Ground truth/Havbrusen_happy.csv',
+                     your_path + 'HF1/HF1/Songs/Havbrusen/Aligned annotations/Ground truth/Havbrusen_angry.csv',
+                     your_path + 'HF1/HF1/Songs/Havbrusen/Aligned annotations/Ground truth/Havbrusen_sad.csv',
+                     your_path + 'HF1/HF1/Songs/Havbrusen/Aligned annotations/Ground truth/Havbrusen_tender.csv',
+                     your_path + 'HF1/HF1/Songs/Havbrusen/Havbrusen_original 10-Nov-2020 19-39-49.csv',
+                     your_path + 'HF1/HF1/Songs/IvarJorde/Aligned annotations/Ground truth/IvarJorde_happy.csv',
+                     your_path + 'HF1/HF1/Songs/IvarJorde/Aligned annotations/Ground truth/IvarJorde_angry.csv',
+                     your_path + 'HF1/HF1/Songs/IvarJorde/Aligned annotations/Ground truth/IvarJorde_sad.csv',
+                     your_path + 'HF1/HF1/Songs/IvarJorde/Aligned annotations/Ground truth/IvarJorde_tender.csv',
+                     your_path + 'HF1/HF1/Songs/IvarJorde/IvarJorde_original 06-Oct-2020 11-34-11.csv',
+                     your_path + 'HF1/HF1/Songs/LattenSomBedOmNoko/Aligned annotations/Ground truth/LattenSomBedOmNoko_happy.csv',
+                     your_path + 'HF1/HF1/Songs/LattenSomBedOmNoko/Aligned annotations/Ground truth/LattenSomBedOmNoko_angry.csv',
+                     your_path + 'HF1/HF1/Songs/LattenSomBedOmNoko/Aligned annotations/Ground truth/LattenSomBedOmNoko_sad.csv',
+                     your_path + 'HF1/HF1/Songs/LattenSomBedOmNoko/Aligned annotations/Ground truth/LattenSomBedOmNoko_tender.csv',
+                     your_path + 'HF1/HF1/Songs/LattenSomBedOmNoko/LattenSomBedOmNoko_original 07-Oct-2020 00-55-06.csv',
+                     your_path + 'HF1/HF1/Songs/SigneUladalen/Aligned annotations/Ground truth/SigneUladalen_happy.csv',
+                     your_path + 'HF1/HF1/Songs/SigneUladalen/Aligned annotations/Ground truth/SigneUladalen_angry.csv',
+                     your_path + 'HF1/HF1/Songs/SigneUladalen/Aligned annotations/Ground truth/SigneUladalen_sad.csv',
+                     your_path + 'HF1/HF1/Songs/SigneUladalen/Aligned annotations/Ground truth/SigneUladalen_tender.csv',
+                     your_path + 'HF1/HF1/Songs/SigneUladalen/SigneUladalen_original 20-Oct-2020 15-06-30.csv',
+                     your_path + 'HF1/HF1/Songs/Silkjegulen/Aligned annotations/Ground truth/Silkjegulen_happy.csv',
+                     your_path + 'HF1/HF1/Songs/Silkjegulen/Aligned annotations/Ground truth/Silkjegulen_angry.csv',
+                     your_path + 'HF1/HF1/Songs/Silkjegulen/Aligned annotations/Ground truth/Silkjegulen_sad.csv',
+                     your_path + 'HF1/HF1/Songs/Silkjegulen/Aligned annotations/Ground truth/Silkjegulen_tender.csv',
+                     your_path + 'HF1/HF1/Songs/Silkjegulen/Silkjegulen_original 06-Jul-2020 20-13-08.csv',
+                     your_path + 'HF1/HF1/Songs/Valdresspringar/Aligned annotations/Ground truth/Valdresspringar_happy.csv',
+                     your_path + 'HF1/HF1/Songs/Valdresspringar/Aligned annotations/Ground truth/Valdresspringar_angry.csv',
+                     your_path + 'HF1/HF1/Songs/Valdresspringar/Aligned annotations/Ground truth/Valdresspringar_sad.csv',
+                     your_path + 'HF1/HF1/Songs/Valdresspringar/Aligned annotations/Ground truth/Valdresspringar_tender.csv',
+                     your_path + 'HF1/HF1/Songs/Valdresspringar/Valdresspringar_original 02-Oct-2020 12-16-41.csv',
+                     your_path + 'HF1/HF1/Songs/Vossarull/Aligned annotations/Ground truth/Vossarull_happy.csv',
+                     your_path + 'HF1/HF1/Songs/Vossarull/Aligned annotations/Ground truth/Vossarull_angry.csv',
+                     your_path + 'HF1/HF1/Songs/Vossarull/Aligned annotations/Ground truth/Vossarull_sad.csv',
+                     your_path + 'HF1/HF1/Songs/Vossarull/Aligned annotations/Ground truth/Vossarull_tender.csv',
+                     your_path + 'HF1/HF1/Songs/Vossarull/vossarull egen innspilling 28-Jun-2020 16-56-57.csv']
 
-list_of_wav_paths = [your_path + 'HF1/HF1/Songs/Haslebuskane/Audio files/Haslebuskane_happy.wav']#,
-                     # your_path + 'HF1/HF1/Songs/Haslebuskane/Audio files/Haslebuskane_angry.wav',
-                     # your_path + 'HF1/HF1/Songs/Haslebuskane/Audio files/Haslebuskane_sad.wav',
-                     # your_path + 'HF1/HF1/Songs/Haslebuskane/Audio files/Haslebuskane_tender.wav',
-                     # your_path + 'HF1/HF1/Songs/Haslebuskane/Audio files/Haslebuskane_original.wav']
+list_of_wav_paths = [your_path + 'HF1/HF1/Songs/Haslebuskane/Audio files/Haslebuskane_happy.wav',
+                     your_path + 'HF1/HF1/Songs/Haslebuskane/Audio files/Haslebuskane_angry.wav',
+                     your_path + 'HF1/HF1/Songs/Haslebuskane/Audio files/Haslebuskane_sad.wav',
+                     your_path + 'HF1/HF1/Songs/Haslebuskane/Audio files/Haslebuskane_tender.wav',
+                     your_path + 'HF1/HF1/Songs/Haslebuskane/Audio files/Haslebuskane_original.wav',
+                     your_path + 'HF1/HF1/Songs/Havbrusen/Audio files/Havbrusen_happy.wav',
+                     your_path + 'HF1/HF1/Songs/Havbrusen/Audio files/Havbrusen_angry.wav',
+                     your_path + 'HF1/HF1/Songs/Havbrusen/Audio files/Havbrusen_sad.wav',
+                     your_path + 'HF1/HF1/Songs/Havbrusen/Audio files/Havbrusen_tender.wav',
+                     your_path + 'HF1/HF1/Songs/Havbrusen/Audio files/Havbrusen_original.wav',
+                     your_path + 'HF1/HF1/Songs/IvarJorde/Audio files/IvarJorde_happy.wav',
+                     your_path + 'HF1/HF1/Songs/IvarJorde/Audio files/IvarJorde_angry.wav',
+                     your_path + 'HF1/HF1/Songs/IvarJorde/Audio files/IvarJorde_sad.wav',
+                     your_path + 'HF1/HF1/Songs/IvarJorde/Audio files/IvarJorde_tender.wav',
+                     your_path + 'HF1/HF1/Songs/IvarJorde/Audio files/IvarJorde_original.wav',
+                     your_path + 'HF1/HF1/Songs/LattenSomBedOmNoko/Audio files/LattenSomBedOmNoko_happy.wav',
+                     your_path + 'HF1/HF1/Songs/LattenSomBedOmNoko/Audio files/LattenSomBedOmNoko_angry.wav',
+                     your_path + 'HF1/HF1/Songs/LattenSomBedOmNoko/Audio files/LattenSomBedOmNoko_sad.wav',
+                     your_path + 'HF1/HF1/Songs/LattenSomBedOmNoko/Audio files/LattenSomBedOmNoko_tender.wav',
+                     your_path + 'HF1/HF1/Songs/LattenSomBedOmNoko/Audio files/LattenSomBedOmNoko_original.wav',
+                     your_path + 'HF1/HF1/Songs/SigneUladalen/Audio files/SigneUladalen_happy.wav',
+                     your_path + 'HF1/HF1/Songs/SigneUladalen/Audio files/SigneUladalen_angry.wav',
+                     your_path + 'HF1/HF1/Songs/SigneUladalen/Audio files/SigneUladalen_sad.wav',
+                     your_path + 'HF1/HF1/Songs/SigneUladalen/Audio files/SigneUladalen_tender.wav',
+                     your_path + 'HF1/HF1/Songs/SigneUladalen/Audio files/SigneUladalen_original.wav',
+                     your_path + 'HF1/HF1/Songs/Silkjegulen/Audio files/Silkjegulen_happy.wav',
+                     your_path + 'HF1/HF1/Songs/Silkjegulen/Audio files/Silkjegulen_angry.wav',
+                     your_path + 'HF1/HF1/Songs/Silkjegulen/Audio files/Silkjegulen_sad.wav',
+                     your_path + 'HF1/HF1/Songs/Silkjegulen/Audio files/Silkjegulen_tender.wav',
+                     your_path + 'HF1/HF1/Songs/Silkjegulen/Audio files/Silkjegulen_original.wav',
+                     your_path + 'HF1/HF1/Songs/Valdresspringar/Audio files/Valdresspringar_happy.wav',
+                     your_path + 'HF1/HF1/Songs/Valdresspringar/Audio files/Valdresspringar_angry.wav',
+                     your_path + 'HF1/HF1/Songs/Valdresspringar/Audio files/Valdresspringar_sad.wav',
+                     your_path + 'HF1/HF1/Songs/Valdresspringar/Audio files/Valdresspringar_tender.wav',
+                     your_path + 'HF1/HF1/Songs/Valdresspringar/Audio files/Valdresspringar_original.wav',
+                     your_path + 'HF1/HF1/Songs/Vossarull/Audio files/Vossarull_happy.wav',
+                     your_path + 'HF1/HF1/Songs/Vossarull/Audio files/Vossarull_angry.wav',
+                     your_path + 'HF1/HF1/Songs/Vossarull/Audio files/Vossarull_sad.wav',
+                     your_path + 'HF1/HF1/Songs/Vossarull/Audio files/Vossarull_tender.wav',
+                     your_path + 'HF1/HF1/Songs/Vossarull/Audio files/Vossarull_original.wav']
 
 
 
