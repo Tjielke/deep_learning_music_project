@@ -4,3 +4,6 @@ librosa
 matplotlib
 scipy
 torch
+dill
+tensorboard-logger
+pandas
