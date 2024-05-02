@@ -52,7 +52,7 @@ data_time = AverageMeter()
 train_loss = 0
 validation_loss = 0
 
-num_epochs = 250
+num_epochs = 50
 best_val = 0.0
 epoch_time = time.time()
 for epoch in range(num_epochs):
