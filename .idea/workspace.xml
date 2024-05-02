@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0173393e-eda8-4031-9256-1797ad9f8d32" name="Changes" comment="Created a magnificently working function for preprocessing the wav files together with the csv files. The function creates a dataframe in which the onset times, the start and end of the sample are connected to the spectogram. This is subsequently saved in the path of your choosing">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="0173393e-eda8-4031-9256-1797ad9f8d32" name="Changes" comment="Reorganised Files to reduce information overload" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -58,6 +55,13 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\georg\PycharmProjects\deep_learning_music_project\Main\data_loading" />
+      <recent name="C:\Users\georg\PycharmProjects\deep_learning_music_project\Main\model_build" />
+      <recent name="C:\Users\georg\PycharmProjects\deep_learning_music_project\unused_code" />
+    </key>
+  </component>
   <component name="RunManager" selected="Python.pre_processing">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Assignment" />
@@ -124,7 +128,7 @@
       <workItem from="1713795481535" duration="418000" />
       <workItem from="1714374497757" duration="7360000" />
       <workItem from="1714464360640" duration="15196000" />
-      <workItem from="1714676754468" duration="1523000" />
+      <workItem from="1714676754468" duration="2401000" />
     </task>
     <task id="LOCAL-00001" summary="updated the requirements file with required packages">
       <created>1710422295441</created>
@@ -182,7 +186,15 @@
       <option name="project" value="LOCAL" />
       <updated>1714489745123</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Reorganised Files to reduce information overload">
+      <option name="closed" value="true" />
+      <created>1714680667430</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1714680667430</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -204,7 +216,8 @@
     <MESSAGE value="Created a file called model build. In this file, the model is build and can be altered. The main file contains the training stuff and all other files are converted to .py files to make them faster and to be able to import the functions" />
     <MESSAGE value="Incredible changes, my goodness. Main issue was the installing of packages and the dependencies between the scripts, fixed those and now trying to make the main.py work" />
     <MESSAGE value="Created a magnificently working function for preprocessing the wav files together with the csv files. The function creates a dataframe in which the onset times, the start and end of the sample are connected to the spectogram. This is subsequently saved in the path of your choosing" />
-    <option name="LAST_COMMIT_MESSAGE" value="Created a magnificently working function for preprocessing the wav files together with the csv files. The function creates a dataframe in which the onset times, the start and end of the sample are connected to the spectogram. This is subsequently saved in the path of your choosing" />
+    <MESSAGE value="Reorganised Files to reduce information overload" />
+    <option name="LAST_COMMIT_MESSAGE" value="Reorganised Files to reduce information overload" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Assignment$pre_processing.coverage" NAME="pre_processing Coverage Results" MODIFIED="1714485299046" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Tjielke" />
