@@ -5,7 +5,7 @@ from scipy import signal
 
 
 #, data = wavfile.read('E:/archive/musicnet/musicnet/train_data/1727.wav')
-samplerate, data = wavfile.read('../Pytorch/Data/musicnet/musicnet/train_data/1727.wav')
+samplerate, data = wavfile.read('../unused_code/Pytorch/Data/musicnet/musicnet/train_data/1727.wav')
 
 
 type(data)
