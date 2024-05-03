@@ -78,6 +78,7 @@ rep_params = {'method': 'Mel Spectrogram', 'n_fft': 2048, 'n_mels': 96, 'hop_len
 
 
 # Function to convert JSON-encoded strings back to numpy arrays
+# Very important function that was  customized to fit our data. It won't work otherwise
 def custom_spectrogram_parser(spect_str):
     try:
         cleaned_str = spect_str.strip('[]')
@@ -88,7 +89,7 @@ def custom_spectrogram_parser(spect_str):
         # Return an array of zeros of a predefined size if parsing fails
         return np.zeros((254,))  # Ensure this matches your expected input size
 
-
+# Here lies some test code to improve performance. Didn't work for now
 # Iterate over each DataFrame in the train_dataframes dictionary
 '''for filename, df in train_dataframes.items():
     # Apply the custom_spectrogram_parser to the 'Spectrogram' column
@@ -102,6 +103,7 @@ for filename, df in test_dataframes.items():
     df['Spectrogram'] = df['Spectrogram'].apply(lambda x: x if x.shape == (254,) else np.zeros((254,)))
     test_dataframes[filename] = df  # Update the DataFrame in the dictionary'''
 
+# Here you can uncomment to explore the csv from the files
 # Iterate over each DataFrame in the dictionary
 '''for file, df in train_dataframes.items():
     print(f"Data from file: {file}")
@@ -124,12 +126,15 @@ criterion = nn.MSELoss()
 optimizer = torch.optim.Adam([p for p in model.parameters() if p.requires_grad], lr=0.0001)
 scheduler = lr_scheduler.MultiStepLR(optimizer, milestones=[30], gamma=0.1)
 
-
+# Github metrics
 batch_time = AverageMeter()
 data_time = AverageMeter()
 
+
 train_loss = 0
 validation_loss = 0
+
+# Epoch is set into 1 because it is very slow at the moment. It is just for testing purposes
 
 num_epochs = 1
 best_val = 0.0
@@ -137,6 +142,7 @@ best_val = 0.0
 
 epoch_time = time.time()
 for epoch in range(num_epochs):
+
     # Training loop
 
     # Github metrics
@@ -149,6 +155,7 @@ for epoch in range(num_epochs):
     train_loss_meter = AverageMeter()
     correct_train = 0
     total_train = 0
+
     # Our metrics
     model.train()  # Set model to training mode
     batch_time.reset()
@@ -158,6 +165,7 @@ for epoch in range(num_epochs):
 
     for file, df in train_dataframes.items():
 
+        # Time and loss updates - Our metrics
         start_time = time.time()
 
         # Convert the 'Spectrogram' column back to numpy arrays
@@ -257,6 +265,7 @@ for epoch in range(num_epochs):
     total_val_samples = 0
 
     for file, df in test_dataframes.items():  # Loop over test dataframes
+
         # Convert the 'Spectrogram' column back to numpy arrays
         df['Spectrogram'] = df['Spectrogram'].apply(custom_spectrogram_parser)
 
