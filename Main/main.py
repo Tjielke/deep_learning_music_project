@@ -16,6 +16,7 @@ import json
 #from model_build import forward_pass, init_hidden
 from model_build import SpectralCRNN_Reg_Dropout
 
+#Github metrics
 class AverageMeter(object):
     """Computes and stores the average and current value"""
     def __init__(self):
@@ -49,7 +50,10 @@ project_dir = os.getcwd()
 train_data_dir = os.path.join(project_dir, 'Data', 'train_data')
 
 # Use a list comprehension to create a list of all CSV file paths
-csv_files = [f'{train_data_dir}/{file}' for file in os.listdir(train_data_dir) if file.endswith('.csv')]
+#csv_files = [f'{train_data_dir}/{file}' for file in os.listdir(train_data_dir) if file.endswith('.csv')]
+
+# Use a list comprehension to create a list of all CSV file paths, limiting to the first two
+csv_files = [f'{train_data_dir}/{file}' for file in os.listdir(train_data_dir) if file.endswith('.csv')][:2]
 
 # Use a dictionary comprehension to read each CSV file into a DataFrame
 # The keys of the dictionary will be the file names, and the values will be the DataFrames
@@ -57,7 +61,13 @@ train_dataframes = {file: pd.read_csv(file) for file in csv_files}
 
 
 test_data_dir = os.path.join(project_dir, 'Data', 'test_data')
-csv_files = [f'{test_data_dir}/{file}' for file in os.listdir(test_data_dir) if file.endswith('.csv')]
+
+# Use a list comprehension to create a list of all CSV file paths
+#csv_files = [f'{test_data_dir}/{file}' for file in os.listdir(test_data_dir) if file.endswith('.csv')]
+
+# Use a list comprehension to create a list of all CSV file paths, limiting to the first two
+csv_files = [f'{test_data_dir}/{file}' for file in os.listdir(test_data_dir) if file.endswith('.csv')][:2]
+
 test_dataframes = {file: pd.read_csv(file) for file in csv_files}
 
 # Configure tensorboard logger
@@ -70,26 +80,27 @@ rep_params = {'method': 'Mel Spectrogram', 'n_fft': 2048, 'n_mels': 96, 'hop_len
 # Function to convert JSON-encoded strings back to numpy arrays
 def custom_spectrogram_parser(spect_str):
     try:
-        # Remove square brackets and split by spaces
         cleaned_str = spect_str.strip('[]')
-        array = np.array([float(num) for num in cleaned_str.split() if num])
+        # Make sure to convert all entries explicitly to float
+        array = np.array([float(num) for num in cleaned_str.split() if num.strip()])
         return array
     except Exception as e:
-        print(f"Error parsing spectrogram string: {e}")
-        return np.array([])  # Return an empty array in case of parsing failure
+        # Return an array of zeros of a predefined size if parsing fails
+        return np.zeros((254,))  # Ensure this matches your expected input size
 
 
+# Iterate over each DataFrame in the train_dataframes dictionary
+'''for filename, df in train_dataframes.items():
+    # Apply the custom_spectrogram_parser to the 'Spectrogram' column
+    df['Spectrogram'] = df['Spectrogram'].apply(custom_spectrogram_parser)
+    df['Spectrogram'] = df['Spectrogram'].apply(lambda x: x if x.shape == (254,) else np.zeros((254,)))
+    train_dataframes[filename] = df  # Update the DataFrame in the dictionary
 
-# Load Datasets
-#train_dataset = SpectralDataset('./dat/middle_2_data_3_train.dill', 1, rep_params)
-#train_dataloader = SpectralDataLoader(train_dataset, batch_size=10, num_workers=4, shuffle=True)
-
-#test_dataset = SpectralDataset('./dat/middle_2_data_3_test.dill', 1, rep_params)
-#test_dataloader = SpectralDataLoader(test_dataset, batch_size=10, num_workers=1, shuffle=True)
-
-#valid_dataset = SpectralDataset('./dat/middle_2_data_3_valid.dill', 1, rep_params)
-#valid_dataloader = SpectralDataLoader(valid_dataset, batch_size=10, num_workers=4, shuffle=True)
-
+# Similarly, for the test_dataframes dictionary
+for filename, df in test_dataframes.items():
+    df['Spectrogram'] = df['Spectrogram'].apply(custom_spectrogram_parser)
+    df['Spectrogram'] = df['Spectrogram'].apply(lambda x: x if x.shape == (254,) else np.zeros((254,)))
+    test_dataframes[filename] = df  # Update the DataFrame in the dictionary'''
 
 # Iterate over each DataFrame in the dictionary
 '''for file, df in train_dataframes.items():
@@ -120,25 +131,55 @@ data_time = AverageMeter()
 train_loss = 0
 validation_loss = 0
 
-num_epochs = 50
+num_epochs = 1
 best_val = 0.0
+
+
 epoch_time = time.time()
 for epoch in range(num_epochs):
     # Training loop
+
+    # Github metrics
     avg_loss = 0.0
     end = time.time()
     all_predictions = []
     all_targets = []
     losses = []
 
+    train_loss_meter = AverageMeter()
+    correct_train = 0
+    total_train = 0
+    # Our metrics
+    model.train()  # Set model to training mode
+    batch_time.reset()
+    data_time.reset()
+    total_loss = 0
+    total_samples = 0
+
     for file, df in train_dataframes.items():
+
+        start_time = time.time()
+
         # Convert the 'Spectrogram' column back to numpy arrays
         df['Spectrogram'] = df['Spectrogram'].apply(custom_spectrogram_parser)
 
-        # Stack spectrogram data into a single numpy array
+        # Inspect data before stacking to ensure there are no objects
+        if any(isinstance(x, np.ndarray) and x.dtype == object for x in df['Spectrogram']):
+            print("Object dtype found in Spectrogram arrays")
+
         inputs = np.vstack(df['Spectrogram'].values)
+
+        # Double-check inputs dtype and convert to float32 if not already
+        if inputs.dtype != np.float32:
+            inputs = inputs.astype(np.float32)
+
         # Convert to PyTorch tensor
-        inputs = torch.tensor(inputs, dtype=torch.float32).unsqueeze(1)  # Add channel dimension
+        try:
+            inputs = torch.tensor(inputs).unsqueeze(1)  # Ensure correct shape [N, C, H, W]
+        except TypeError as e:
+            print("Failed to convert inputs to a tensor:", e)
+            print("Inputs dtype:", inputs.dtype)
+            break  # Break to avoid proceeding with incorrect data
 
 
 
@@ -180,58 +221,108 @@ for epoch in range(num_epochs):
         loss.backward()
         optimizer.step()
 
+        # Time and loss updates - Our metrics
+        batch_time.update(time.time() - start_time)
+        data_time.update(time.time() - start_time)
+        total_loss += loss.item() * inputs.size(0)
+        total_samples += inputs.size(0)
+
+        # Time and loss updates - Github metrics
         batch_time.update(time.time() - end)
         end = time.time()
 
 
 
-        # Logging and printing
-        '''print(f'Epoch: [{epoch + 1}][{i + 1}/{len(train_dataloader)}]\t'
+        # Logging and printing- our metrics
+        print(f'Epoch: [{epoch + 1}][{file}]\t'
               f'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
               f'Data {data_time.val:.3f} ({data_time.avg:.3f})\t'
-              f'Loss {loss.val:.4f} ({loss.avg:.4f})\t')'''
+              f'Loss {loss.item():.4f}')
 
-        # Calculate average loss for this epoch
-        train_loss = sum(losses) / len(losses)
-        print(f"Epoch {epoch + 1}/{num_epochs}, Train Loss: {train_loss:.4f}")
+    # Calculate average loss for this epoch - our metrics
+    train_loss = sum(losses) / len(losses)
+    print(f"Epoch {epoch + 1}/{num_epochs}, Train Loss: {train_loss:.4f}")
 
-    # Assuming you have defined the test data in test_dataframe
 
     # Validation loop
     model.eval()
+
+    # Github metrics
     losses = []
     all_predictions = []
     all_targets = []
 
+    #our metrics
+    total_val_loss = 0
+    total_val_samples = 0
+
     for file, df in test_dataframes.items():  # Loop over test dataframes
-        inputs = torch.tensor(df['Spectrogram'].values)  # Assuming 'Spectrogram' contains the spectrogram data
+        # Convert the 'Spectrogram' column back to numpy arrays
+        df['Spectrogram'] = df['Spectrogram'].apply(custom_spectrogram_parser)
+
+        # Inspect data before stacking to ensure there are no objects
+        if any(isinstance(x, np.ndarray) and x.dtype == object for x in df['Spectrogram']):
+            print("Object dtype found in Spectrogram arrays")
+
+        inputs = np.vstack(df['Spectrogram'].values)
+
+        # Double-check inputs dtype and convert to float32 if not already
+        if inputs.dtype != np.float32:
+            inputs = inputs.astype(np.float32)
+
+        # Convert to PyTorch tensor
+        try:
+            inputs = torch.tensor(inputs).unsqueeze(1)  # Ensure correct shape [N, C, H, W]
+        except TypeError as e:
+            print("Failed to convert inputs to a tensor:", e)
+            print("Inputs dtype:", inputs.dtype)
+            break  # Break to avoid proceeding with incorrect data\
+
+        inputs = inputs.view(-1, 1, 254, 1)
+
         targets = torch.tensor(df['onset'].values, dtype=torch.float32)  # Assuming 'onset' contains the target values
-        inputs = Variable(inputs.cuda(), requires_grad=False)
-        targets = Variable(targets.cuda(), requires_grad=False)
+        data_time.update(time.time() - end)
+        inputs = Variable(inputs, requires_grad=False)
+        targets = Variable(targets, requires_grad=False)
         targets = targets.view(-1, 1)
 
         # Initialize hidden state
-        hidden_state = model.init_hidden(inputs.size(0))
+        model.init_hidden(inputs.size(0))
 
         # Forward pass
         out = model.forward(inputs)
+        # Ensure dimensions [batch_size, channels, height, width]
 
-        all_predictions.extend(out.data.cpu().numpy())
-        all_targets.extend(targets.data.cpu().numpy())
+        # Our metrics
+        # Forward pass only to compute validation loss
+        with torch.no_grad():
+            outputs = model(inputs)
+            loss = criterion(outputs, targets)
 
-        loss = criterion(out, targets)
+        total_val_loss += loss.item() * inputs.size(0)
+        total_val_samples += inputs.size(0)
+
+        # Github metrics
+        #loss = criterion(out, targets)
         losses.append(loss.item())
 
-        # Calculate average loss for validation
-        valid_loss = sum(losses) / len(losses)
-        print(f"Validation Loss: {valid_loss:.4f}")
+        #our metrics
+        # Optionally, print validation loss for each file
+        print(f'Validation - File: {file}, Loss: {loss.item():.4f}')
 
+    #our metrics
+    # Calculate and print the average validation loss
+    average_val_loss = total_val_loss / total_val_samples
+    print(f'Average Validation Loss: {average_val_loss:.4f}')
+
+    #Github evaluation
     # Assuming you have defined evaluate_classification function
     val_r2, val_accuracy = evaluate_classification(np.array(all_targets), np.array(all_predictions))
 
+    # Github metrics
     # Log values
     log_value('Train Loss', train_loss, epoch)
-    log_value('Validation Loss', valid_loss, epoch)
+    #log_value('Validation Loss', valid_loss, epoch)
   #  log_value('Training Accuracy', train_accuracy, epoch)
     log_value('Validation Accuracy', val_accuracy, epoch)
   #  log_value('Training R2', train_r2, epoch)
