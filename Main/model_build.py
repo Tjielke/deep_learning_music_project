@@ -19,27 +19,29 @@ class SpectralCRNN_Reg_Dropout(nn.Module):
             #nn.Dropout2d(0.6),
             nn.BatchNorm2d(32),
             nn.ELU(),
-            nn.MaxPool2d((2,4)),
+            nn.MaxPool2d((2, 1)),
             # Conv Layer 2
             nn.Conv2d(32, 64, kernel_size=(3, 7), padding=(1,3)),
             #nn.Dropout2d(0.6),
             nn.BatchNorm2d(64),
             nn.ELU(),
-            nn.MaxPool2d((3,5)),
+            nn.MaxPool2d((3, 1)),
             # Conv Layer 3
             nn.Conv2d(64, 128, kernel_size=(3, 7), padding=(1,3)),
             nn.BatchNorm2d(128),
             nn.ELU(),
-            nn.MaxPool2d((3,5))
+            nn.MaxPool2d((3, 1))
         )
-        self.rnn = nn.GRU(640, 200, batch_first = True)
+        self.rnn = nn.GRU(128, 200, batch_first = True)
         self.fc = nn.Linear(200, 1)
     def forward(self, x):
-        out = self.conv(x)
-        out = out.view(out.size(0), -1, out.size(3))
-        out = out.transpose(1,2)
+        print("Input:", x.shape)
+        out = self.conv(x)  # [17661, 128, 14, 1]
+        print("After conv1:", out.shape)
+        out = out.squeeze(-1)  # Remove width dimension, now [17661, 128, 14]
+        out = out.permute(0, 2, 1)  # Change to [17661, 14, 128] to match RNN input expectations
         out, _ = self.rnn(out, self.hidden)
-        out = out[:,-1,:]
+        out = out[:, -1, :]  # Take last time step's output
         out = self.fc(out)
         return F.relu(out)
     def init_hidden(self, mini_batch_size):
