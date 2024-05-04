@@ -10,8 +10,10 @@ from sklearn.metrics import confusion_matrix, precision_recall_fscore_support
 import os
 import pandas as pd
 from model_build import SpectralCRNN_Reg_Dropout, SpectralCRNN
+from sklearn.model_selection import train_test_split
 
-#Github metrics
+
+
 class AverageMeter(object):
     """Computes and stores the average and current value"""
     def __init__(self):
@@ -34,9 +36,7 @@ def evaluate_classification(targets, predictions):
     predictions[predictions < 0] = 0
     predictions[predictions > 10] = 10
     predictions = np.round(predictions).astype(int)
-    accuracy = metrics.accuracy_score(targets, predictions)
-    # Calculate accuracy
-    accuracy = metrics.accuracy_score(targets, predictions)
+    accuracy = metrics.accuracy_score(targets, predictions) * 100
 
     # Calculate confusion matrix
     conf_matrix = confusion_matrix(targets, predictions)
@@ -58,12 +58,20 @@ train_data_dir = os.path.join(project_dir, 'Data', 'train_data')
 #csv_files = [f'{train_data_dir}/{file}' for file in os.listdir(train_data_dir) if file.endswith('.csv')]
 
 # Use a list comprehension to create a list of all CSV file paths, limiting to the first two
-csv_files = [f'{train_data_dir}/{file}' for file in os.listdir(train_data_dir) if file.endswith('.csv')][:1]
+csv_files = [f'{train_data_dir}/{file}' for file in os.listdir(train_data_dir) if file.endswith('.csv')][:2]
 
 # Use a dictionary comprehension to read each CSV file into a DataFrame
 # The keys of the dictionary will be the file names, and the values will be the DataFrames
-train_dataframes = {file: pd.read_csv(file) for file in csv_files}
+train_split = {file: pd.read_csv(file) for file in csv_files}
 
+# Assuming train_dataframes is a dictionary where the key is the filename and the value is the DataFrame
+train_dataframes = {}
+hold_out_dataframes = {}
+
+for filename, df in train_split.items():
+    train_df, hold_out_df = train_test_split(df, test_size=0.5, random_state=17)  # Adjust test_size as needed
+    train_dataframes[filename] = train_df
+    hold_out_dataframes[filename] = hold_out_df
 
 test_data_dir = os.path.join(project_dir, 'Data', 'test_data')
 
@@ -80,54 +88,66 @@ configure('runs/MelSpec_reg_lr0.0001_big_ELU_Adam_noteacc', flush_secs=2)
 
 # Function to convert JSON-encoded strings back to numpy arrays
 # Very important function that was  customized to fit our data. It won't work otherwise
-def custom_spectrogram_parser(spect_str):
+def custom_spectrogram_parser(spect_str, max_length):
+    if isinstance(spect_str, np.ndarray):
+        return spect_str  # If already an array, return as is
     try:
         cleaned_str = spect_str.strip('[]')
-        # Make sure to convert all entries explicitly to float
         array = np.array([float(num) for num in cleaned_str.split() if num.strip()])
+        # Ensure the array is padded to max_length
+        if array.size < max_length:
+            array = np.pad(array, (0, max_length - array.size), mode='constant')
+        assert array.size == max_length, f"Array length after padding is {array.size}, expected {max_length}"
         return array
     except Exception as e:
-        # Return an array of zeros of a predefined size if parsing fails
-        return np.zeros((254,))  # Ensure this matches your expected input size
+        print(f"Error parsing spectrogram: {e}")
+        return np.zeros(max_length)  # Ensure consistent shape
 
-# Here lies some test code to improve performance. Didn't work for now
-# Iterate over each DataFrame in the train_dataframes dictionary
-'''for filename, df in train_dataframes.items():
-    # Apply the custom_spectrogram_parser to the 'Spectrogram' column
-    df['Spectrogram'] = df['Spectrogram'].apply(custom_spectrogram_parser)
-    df['Spectrogram'] = df['Spectrogram'].apply(lambda x: x if x.shape == (254,) else np.zeros((254,)))
-    train_dataframes[filename] = df  # Update the DataFrame in the dictionary
+def normalize_spectrograms(spect, mean, std, epsilon=1e-10):
+    normalized_spect = (spect - mean) / (std + epsilon)  # Adding epsilon to avoid division by zero
+    return normalized_spect
 
-# Similarly, for the test_dataframes dictionary
-for filename, df in test_dataframes.items():
-    df['Spectrogram'] = df['Spectrogram'].apply(custom_spectrogram_parser)
-    df['Spectrogram'] = df['Spectrogram'].apply(lambda x: x if x.shape == (254,) else np.zeros((254,)))
-    test_dataframes[filename] = df  # Update the DataFrame in the dictionary'''
+def compute_normalization_constants(dataframes, max_length):
+    all_spectrograms = []
+    for df in dataframes.values():
+        spectrograms = df['Spectrogram'].apply(lambda x: custom_spectrogram_parser(x, max_length))
+        for spec in spectrograms:
+            if len(spec) != max_length:
+                print(f"Error: Array length {len(spec)} does not match max_length {max_length}")
+            all_spectrograms.append(spec)
+    all_spectrograms = np.vstack(all_spectrograms)
+    mean = np.mean(all_spectrograms, axis=0)
+    std = np.std(all_spectrograms, axis=0)
+    return mean, std
 
-# Here you can uncomment to explore the csv from the files
-# Iterate over each DataFrame in the dictionary
-'''for file, df in train_dataframes.items():
-    print(f"Data from file: {file}")
-    print("Shape:", df.shape)  # Print the shape of the DataFrame
-    print("Columns:", df.columns.tolist())  # Print the column names
-    print("Info:")
-    print(df.info())  # Print basic information about the DataFrame
-    print("Head:")
-    print(df.head())  # Display the first few rows of the DataFrame
-    print("Summary statistics:")
-    print(df.describe())  # Display summary statistics for numerical columns
-    print("Unique values per column:")
-    print(df.nunique())  # Display the number of unique values in each column
-    print("\n")'''
+def process_dataframes(dataframes, max_length):
+    for filename, df in dataframes.items():
+        # Apply parsing and normalization transformations
+        df['Spectrogram'] = df['Spectrogram'].apply(lambda x: custom_spectrogram_parser(x, max_length))
+        df['Spectrogram'] = df['Spectrogram'].apply(lambda x: normalize_spectrograms(x, mean, std, epsilon=1e-10))
+        dataframes[filename] = df
+
+# Determine the maximum length of spectrograms across all dataframes
+max_length = max(df['Spectrogram'].apply(lambda x: len(x.strip('[]').split())).max() for df in hold_out_dataframes.values())
+print(f"Maximum length calculated: {max_length}")
+
+# Check before using compute_normalization_constants
+print(f"Processing normalization constants with max_length: {max_length}")
+mean, std = compute_normalization_constants(hold_out_dataframes, max_length)
+
+# Processing dataframes
+process_dataframes(train_dataframes, max_length)
+process_dataframes(hold_out_dataframes, max_length)
+process_dataframes(test_dataframes, max_length)
 
 # Define Model
 model = SpectralCRNN_Reg_Dropout()
 # Define optimizer and loss function
 criterion = nn.MSELoss()
-optimizer = torch.optim.Adam([p for p in model.parameters() if p.requires_grad], lr=0.0001)
+optimizer = torch.optim.Adam([p for p in model.parameters() if p.requires_grad], lr=0.01)
 scheduler = lr_scheduler.MultiStepLR(optimizer, milestones=[30], gamma=0.1)
 
-# Github metrics
+
 batch_time = AverageMeter()
 data_time = AverageMeter()
 
@@ -141,19 +161,16 @@ num_epochs = 20
 best_val = 0.0
 
 
-
 for epoch in range(num_epochs):
 
     # Training loop
 
-    # Github metrics
     end = time.time()
     all_predictions = []
     all_targets = []
 
     losses = AverageMeter()
 
-    # Our metrics
     model.train()  # Set model to training mode
     batch_time.reset()
     data_time.reset()
@@ -164,9 +181,6 @@ for epoch in range(num_epochs):
 
         # Time and loss updates - Our metrics
         start_time = time.time()
-
-        # Convert the 'Spectrogram' column back to numpy arrays
-        df['Spectrogram'] = df['Spectrogram'].apply(custom_spectrogram_parser)
 
         # Inspect data before stacking to ensure there are no objects
         if any(isinstance(x, np.ndarray) and x.dtype == object for x in df['Spectrogram']):
@@ -190,19 +204,6 @@ for epoch in range(num_epochs):
 
         # Ensure dimensions [batch_size, channels, height, width]
         inputs = inputs.view(-1, 1, 254, 1)
-
-        # Calculate the total number of spectrograms
-        #total_spectrograms = inputs.shape[0]
-
-        # Determine the maximum batch size that evenly divides the total number of spectrograms
-       # max_batch_size = total_spectrograms // (254 * 1 * 1)  # Assuming the size of each spectrogram is 254x1
-
-        # Use the smaller of the calculated batch size and the desired batch size
-        #batch_size = min(max_batch_size, 32)
-
-
-        # Reshape the input tensor to have the correct shape [batch_size, channels, height, width]
-        #inputs = inputs.view(batch_size, 1, 254, 1)  # Add channel dimension
 
 
         targets = torch.tensor(df['onset'].values, dtype=torch.float32)       # Assuming 'onset' contains the target values
@@ -271,9 +272,6 @@ for epoch in range(num_epochs):
     total_val_loss = 0
 
     for file, df in test_dataframes.items():  # Loop over test dataframes
-
-        # Convert the 'Spectrogram' column back to numpy arrays
-        df['Spectrogram'] = df['Spectrogram'].apply(custom_spectrogram_parser)
 
         # Inspect data before stacking to ensure there are no objects
         if any(isinstance(x, np.ndarray) and x.dtype == object for x in df['Spectrogram']):
