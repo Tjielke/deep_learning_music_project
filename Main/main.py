@@ -9,7 +9,7 @@ from tensorboard_logger import configure, log_value
 from sklearn.metrics import confusion_matrix, precision_recall_fscore_support
 import os
 import pandas as pd
-from model_build import SpectralCRNN_Reg_Dropout
+from model_build import SpectralCRNN_Reg_Dropout, SpectralCRNN
 
 #Github metrics
 class AverageMeter(object):
@@ -41,8 +41,9 @@ def evaluate_classification(targets, predictions):
     # Calculate confusion matrix
     conf_matrix = confusion_matrix(targets, predictions)
 
-    # Calculate precision, recall, and F1-score
-    precision, recall, f1, _ = precision_recall_fscore_support(targets, predictions, average='weighted')
+    precision, recall, f1, _ = precision_recall_fscore_support(
+        targets, predictions, average='weighted', zero_division=0
+    )
 
     return r2, accuracy, conf_matrix, precision, recall, f1
 
@@ -57,7 +58,7 @@ train_data_dir = os.path.join(project_dir, 'Data', 'train_data')
 #csv_files = [f'{train_data_dir}/{file}' for file in os.listdir(train_data_dir) if file.endswith('.csv')]
 
 # Use a list comprehension to create a list of all CSV file paths, limiting to the first two
-csv_files = [f'{train_data_dir}/{file}' for file in os.listdir(train_data_dir) if file.endswith('.csv')][:2]
+csv_files = [f'{train_data_dir}/{file}' for file in os.listdir(train_data_dir) if file.endswith('.csv')][:1]
 
 # Use a dictionary comprehension to read each CSV file into a DataFrame
 # The keys of the dictionary will be the file names, and the values will be the DataFrames
@@ -70,16 +71,12 @@ test_data_dir = os.path.join(project_dir, 'Data', 'test_data')
 #csv_files = [f'{test_data_dir}/{file}' for file in os.listdir(test_data_dir) if file.endswith('.csv')]
 
 # Use a list comprehension to create a list of all CSV file paths, limiting to the first two
-csv_files = [f'{test_data_dir}/{file}' for file in os.listdir(test_data_dir) if file.endswith('.csv')][:2]
+csv_files = [f'{test_data_dir}/{file}' for file in os.listdir(test_data_dir) if file.endswith('.csv')][:1]
 
 test_dataframes = {file: pd.read_csv(file) for file in csv_files}
 
 # Configure tensorboard logger
 configure('runs/MelSpec_reg_lr0.0001_big_ELU_Adam_noteacc', flush_secs=2)
-
-# Parameteres for Spectral Representation
-rep_params = {'method': 'Mel Spectrogram', 'n_fft': 2048, 'n_mels': 96, 'hop_length': 1024, 'normalize': True}
-
 
 # Function to convert JSON-encoded strings back to numpy arrays
 # Very important function that was  customized to fit our data. It won't work otherwise
@@ -237,7 +234,7 @@ for epoch in range(num_epochs):
         print('Epoch: [{0}/{1}]\t'
               'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
               'Loss {losses.val:.4f} ({losses.avg:.4f})'.format(
-            epoch + 1, len(train_dataframes), batch_time=batch_time, losses=losses))
+            epoch + 1, num_epochs, batch_time=batch_time, losses=losses))
 
 
     # Inside your training loop
@@ -312,20 +309,21 @@ for epoch in range(num_epochs):
         # Ensure dimensions [batch_size, channels, height, width]
 
         # Our metrics
-        # Forward pass only to compute validation loss
         with torch.no_grad():
             outputs = model(inputs)
             loss = criterion(outputs, targets)
+            validation_losses.update(loss.item(), inputs.size(0))
+            all_val_predictions.extend(outputs.cpu().numpy())
+            all_val_targets.extend(targets.cpu().numpy())
+
+        # Optional: print progress for each batch in the validation loop
+        print('Validation - Epoch: [{0}/{1}]\t'
+              'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
+              'Loss {validation_losses.val:.4f} ({validation_losses.avg:.4f})'.format(
+            epoch + 1, num_epochs, batch_time=batch_time, validation_losses=validation_losses))
 
         total_val_loss += loss.item() * inputs.size(0)
 
-        # Collect predictions and targets for metric calculations
-        all_val_predictions.extend(outputs.cpu().numpy())
-        all_val_targets.extend(targets.cpu().numpy())
-
-        # Compute validation loss
-        val_loss = criterion(outputs, targets)
-        validation_losses.update(val_loss.item(), inputs.size(0))
 
     # Inside your validation loop
     val_r2, val_accuracy, val_conf_matrix, val_precision, val_recall, val_f1 = evaluate_classification(

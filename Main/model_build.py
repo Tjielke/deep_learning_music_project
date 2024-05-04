@@ -16,13 +16,13 @@ class SpectralCRNN_Reg_Dropout(nn.Module):
         self.conv = nn.Sequential(
             # Conv Layer 1
             nn.Conv2d(1, 32, kernel_size=(3, 7), padding=(1,3)),
-            #nn.Dropout2d(0.6),
+            nn.Dropout2d(0.6),
             nn.BatchNorm2d(32),
             nn.ELU(),
             nn.MaxPool2d((2, 1)),
             # Conv Layer 2
             nn.Conv2d(32, 64, kernel_size=(3, 7), padding=(1,3)),
-            #nn.Dropout2d(0.6),
+            nn.Dropout2d(0.6),
             nn.BatchNorm2d(64),
             nn.ELU(),
             nn.MaxPool2d((3, 1)),
@@ -57,3 +57,37 @@ class SpectralCRNN_Reg_Dropout(nn.Module):
 # Use the forward_pass function in your script
 # Assume x is the input tensor (mel spectrogram images)
 # output = forward_pass(x)
+
+import torch.nn as nn
+
+class SpectralCRNN(nn.Module):
+    def __init__(self):
+        super(SpectralCRNN, self).__init__()
+        self.conv = nn.Sequential(
+            nn.Conv2d(1, 32, kernel_size=(3, 3), padding=(1, 1)),  # Adjust kernel size and padding
+            nn.BatchNorm2d(32),
+            nn.ELU(),
+            nn.MaxPool2d((2, 2)),  # Safe pooling operation
+            nn.Conv2d(32, 64, kernel_size=(3, 3), padding=(1, 1)),  # Adjust kernel size and padding
+            nn.BatchNorm2d(64),
+            nn.ELU(),
+            nn.MaxPool2d((2, 2)),  # Further safe pooling
+            nn.Conv2d(64, 128, kernel_size=(3, 3), padding=(1, 1)),  # Ensure no zero-dimension output
+            nn.BatchNorm2d(128),
+            nn.ELU(),
+            nn.MaxPool2d((2, 2)),  # Final pooling before RNN
+        )
+        self.rnn = nn.GRU(128, 200, batch_first=True)  # No change here
+        self.fc = nn.Linear(200, 1)  # No change here
+
+    def forward(self, x):
+        x = self.conv(x)
+        x = x.squeeze(2)  # Removing an unnecessary dimension
+        x = x.permute(0, 2, 1)  # Adjust dimensions for RNN input
+        _, hidden = self.rnn(x)  # Getting the last hidden state
+        x = self.fc(hidden[-1])  # Using the last output of the RNN
+        return x
+
+    def init_hidden(self, batch_size):
+        hidden = torch.zeros(1, batch_size, 200)
+        return hidden.cuda() if torch.cuda.is_available() else hidden
