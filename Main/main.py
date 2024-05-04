@@ -3,17 +3,12 @@ import time
 import numpy as np
 from torch import nn
 from torch.autograd import Variable
-from SpectralDataset import SpectralDataset, SpectralDataLoader
 from sklearn import metrics
 from torch.optim import lr_scheduler
 from tensorboard_logger import configure, log_value
-import tensorflow
+from sklearn.metrics import confusion_matrix, precision_recall_fscore_support
 import os
 import pandas as pd
-from ast import literal_eval
-import json
-# Import your forward_pass function and init_hidden function
-#from model_build import forward_pass, init_hidden
 from model_build import SpectralCRNN_Reg_Dropout
 
 #Github metrics
@@ -40,7 +35,16 @@ def evaluate_classification(targets, predictions):
     predictions[predictions > 10] = 10
     predictions = np.round(predictions).astype(int)
     accuracy = metrics.accuracy_score(targets, predictions)
-    return r2, accuracy
+    # Calculate accuracy
+    accuracy = metrics.accuracy_score(targets, predictions)
+
+    # Calculate confusion matrix
+    conf_matrix = confusion_matrix(targets, predictions)
+
+    # Calculate precision, recall, and F1-score
+    precision, recall, f1, _ = precision_recall_fscore_support(targets, predictions, average='weighted')
+
+    return r2, accuracy, conf_matrix, precision, recall, f1
 
 
 # Get the project directory path
@@ -136,25 +140,21 @@ validation_loss = 0
 
 # Epoch is set into 1 because it is very slow at the moment. It is just for testing purposes
 
-num_epochs = 1
+num_epochs = 20
 best_val = 0.0
 
 
-epoch_time = time.time()
+
 for epoch in range(num_epochs):
 
     # Training loop
 
     # Github metrics
-    avg_loss = 0.0
     end = time.time()
     all_predictions = []
     all_targets = []
-    losses = []
 
-    train_loss_meter = AverageMeter()
-    correct_train = 0
-    total_train = 0
+    losses = AverageMeter()
 
     # Our metrics
     model.train()  # Set model to training mode
@@ -223,7 +223,6 @@ for epoch in range(num_epochs):
         all_predictions.extend(out.data.cpu().numpy())
         all_targets.extend(targets.data.cpu().numpy())
         loss = criterion(out, targets)
-        losses.append(loss.item())
 
         optimizer.zero_grad()
         loss.backward()
@@ -231,38 +230,48 @@ for epoch in range(num_epochs):
 
         # Time and loss updates - Our metrics
         batch_time.update(time.time() - start_time)
-        data_time.update(time.time() - start_time)
-        total_loss += loss.item() * inputs.size(0)
-        total_samples += inputs.size(0)
-
-        # Time and loss updates - Github metrics
-        batch_time.update(time.time() - end)
-        end = time.time()
+        losses.update(loss.item(), inputs.size(0))
 
 
+        #Optional: print progress for the batch
+        print('Epoch: [{0}/{1}]\t'
+              'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
+              'Loss {losses.val:.4f} ({losses.avg:.4f})'.format(
+            epoch + 1, len(train_dataframes), batch_time=batch_time, losses=losses))
 
-        # Logging and printing- our metrics
-        print(f'Epoch: [{epoch + 1}][{file}]\t'
-              f'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
-              f'Data {data_time.val:.3f} ({data_time.avg:.3f})\t'
-              f'Loss {loss.item():.4f}')
 
-    # Calculate average loss for this epoch - our metrics
-    train_loss = sum(losses) / len(losses)
-    print(f"Epoch {epoch + 1}/{num_epochs}, Train Loss: {train_loss:.4f}")
+    # Inside your training loop
+    train_r2, train_accuracy, train_conf_matrix, train_precision, train_recall, train_f1 = evaluate_classification(
+        np.array(all_targets), np.array(all_predictions))
 
+    print(
+        f"Epoch {epoch + 1}/{num_epochs}, Training Loss: {losses.avg:.4f}, Training R2: {train_r2:.4f}, Training Accuracy: {train_accuracy:.2f}%")
+    print(f"Training Confusion Matrix:\n{train_conf_matrix}")
+    print(f"Training Precision: {train_precision:.4f}, Recall: {train_recall:.4f}, F1-Score: {train_f1:.4f}")
+
+    # Log metrics (if using TensorBoard or any other logging tool)
+    log_value('Train Loss', losses.avg, epoch)
+    log_value('Training R2', train_r2, epoch)
+    log_value('Training Accuracy', train_accuracy, epoch)
+    log_value('Training Precision', train_precision, epoch)
+    log_value('Training Recall', train_recall, epoch)
+    log_value('Training F1-Score', train_f1, epoch)
+
+
+    scheduler.step()
 
     # Validation loop
     model.eval()
 
-    # Github metrics
-    losses = []
-    all_predictions = []
-    all_targets = []
+    # Github metrics - not used
+    losses = AverageMeter()
 
-    #our metrics
+    validation_losses = AverageMeter()  # Reset validation loss meter
+    all_val_predictions = []
+    all_val_targets = []
+
+    #our metrics - not used
     total_val_loss = 0
-    total_val_samples = 0
 
     for file, df in test_dataframes.items():  # Loop over test dataframes
 
@@ -309,34 +318,33 @@ for epoch in range(num_epochs):
             loss = criterion(outputs, targets)
 
         total_val_loss += loss.item() * inputs.size(0)
-        total_val_samples += inputs.size(0)
 
-        # Github metrics
-        #loss = criterion(out, targets)
-        losses.append(loss.item())
+        # Collect predictions and targets for metric calculations
+        all_val_predictions.extend(outputs.cpu().numpy())
+        all_val_targets.extend(targets.cpu().numpy())
 
-        #our metrics
-        # Optionally, print validation loss for each file
-        print(f'Validation - File: {file}, Loss: {loss.item():.4f}')
+        # Compute validation loss
+        val_loss = criterion(outputs, targets)
+        validation_losses.update(val_loss.item(), inputs.size(0))
 
-    #our metrics
-    # Calculate and print the average validation loss
-    average_val_loss = total_val_loss / total_val_samples
-    print(f'Average Validation Loss: {average_val_loss:.4f}')
+    # Inside your validation loop
+    val_r2, val_accuracy, val_conf_matrix, val_precision, val_recall, val_f1 = evaluate_classification(
+        np.array(all_val_targets), np.array(all_val_predictions))
 
-    #Github evaluation
-    # Assuming you have defined evaluate_classification function
-    val_r2, val_accuracy = evaluate_classification(np.array(all_targets), np.array(all_predictions))
+    print(
+        f"Epoch {epoch + 1}/{num_epochs}, Validation Loss: {validation_losses.avg:.4f}, Validation R2: {val_r2:.4f}, Validation Accuracy: {val_accuracy:.2f}%")
+    print(f"Validation Confusion Matrix:\n{val_conf_matrix}")
+    print(f"Validation Precision: {val_precision:.4f}, Recall: {val_recall:.4f}, F1-Score: {val_f1:.4f}")
 
-    # Github metrics
-    # Log values
-    log_value('Train Loss', train_loss, epoch)
-    #log_value('Validation Loss', valid_loss, epoch)
-  #  log_value('Training Accuracy', train_accuracy, epoch)
-    log_value('Validation Accuracy', val_accuracy, epoch)
-  #  log_value('Training R2', train_r2, epoch)
+    # Log validation metrics
+    log_value('Validation Loss', validation_losses.avg, epoch)
     log_value('Validation R2', val_r2, epoch)
+    log_value('Validation Accuracy', val_accuracy, epoch)
+    log_value('Validation Precision', val_precision, epoch)
+    log_value('Validation Recall', val_recall, epoch)
+    log_value('Validation F1-Score', val_f1, epoch)
 
     if val_r2 > best_val:
         best_val = val_r2
-        torch.save(model, 'model_SpectralCRNN_reg_lr0.0001_big_ELU_Adam_noteacc')
+        torch.save(model.state_dict(), 'model_SpectralCRNN_reg_lr0.0001_big_ELU_Adam_noteacc.pth')
+
