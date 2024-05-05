@@ -8,3 +8,4 @@ dill
 tensorboard-logger
 pandas
 tensorflow
+imbalanced-learn
