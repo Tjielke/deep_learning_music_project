@@ -35,9 +35,9 @@ class SpectralCRNN_Reg_Dropout(nn.Module):
         self.rnn = nn.GRU(128, 200, batch_first = True)
         self.fc = nn.Linear(200, 1)
     def forward(self, x):
-        print("Input:", x.shape)
+        #print("Input:", x.shape)
         out = self.conv(x)  # [17661, 128, 14, 1]
-        print("After conv1:", out.shape)
+        #print("After conv1:", out.shape)
         out = out.squeeze(-1)  # Remove width dimension, now [17661, 128, 14]
         out = out.permute(0, 2, 1)  # Change to [17661, 14, 128] to match RNN input expectations
         out, _ = self.rnn(out, self.hidden)
