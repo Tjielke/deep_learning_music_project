@@ -215,6 +215,8 @@ for epoch in range(num_epochs):
         # Initialize hidden state
         model.init_hidden(inputs.size(0))
 
+        optimizer.zero_grad()
+
         # Forward pass
         out = model.forward(inputs)
 
@@ -222,7 +224,6 @@ for epoch in range(num_epochs):
         all_targets.extend(targets.data.cpu().numpy())
         loss = criterion(out, targets)
 
-        optimizer.zero_grad()
         loss.backward()
         optimizer.step()
 
