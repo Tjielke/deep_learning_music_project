@@ -31,18 +31,3 @@ print(f"Training Precision: {train_precision:.4f}, Recall: {train_recall:.4f}, F
 
 
 
-# Here you can uncomment to explore the csv from the files
-# Iterate over each DataFrame in the dictionary
-'''for file, df in train_dataframes.items():
-    print(f"Data from file: {file}")
-    print("Shape:", df.shape)  # Print the shape of the DataFrame
-    print("Columns:", df.columns.tolist())  # Print the column names
-    print("Info:")
-    print(df.info())  # Print basic information about the DataFrame
-    print("Head:")
-    print(df.head())  # Display the first few rows of the DataFrame
-    print("Summary statistics:")
-    print(df.describe())  # Display summary statistics for numerical columns
-    print("Unique values per column:")
-    print(df.nunique())  # Display the number of unique values in each column
-    print("\n")'''
