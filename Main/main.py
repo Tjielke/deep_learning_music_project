@@ -6,7 +6,7 @@ from torch.autograd import Variable
 from sklearn import metrics
 from torch.optim import lr_scheduler
 from tensorboard_logger import configure, log_value
-from sklearn.metrics import confusion_matrix, precision_recall_fscore_support
+from sklearn.metrics import roc_auc_score, confusion_matrix, precision_recall_fscore_support
 import os
 import pandas as pd
 from model_build import SpectralCRNN_Reg_Dropout, SpectralCRNN
@@ -29,12 +29,10 @@ class AverageMeter(object):
         self.count += n
         self.avg = self.sum / self.count
 
-def evaluate_classification(targets, predictions):
+def evaluate_classification(targets, predictions, pred_probabilities=None):
     r2 = metrics.r2_score(targets, predictions)
-    targets = np.round(targets*10).astype(int)
-    predictions = predictions * 10
-    predictions[predictions < 0] = 0
-    predictions[predictions > 10] = 10
+    targets = np.round(targets).astype(int)
+    predictions = 1 / (1 + np.exp(-predictions))  # Apply sigmoid function
     predictions = np.round(predictions).astype(int)
     accuracy = metrics.accuracy_score(targets, predictions) * 100
 
@@ -44,8 +42,16 @@ def evaluate_classification(targets, predictions):
     precision, recall, f1, _ = precision_recall_fscore_support(
         targets, predictions, average='weighted', zero_division=0
     )
+    # Calculate ROC AUC if probability scores are provided
+    roc_auc = None
+    if pred_probabilities is not None:
+        try:
+            # Assuming binary classification; adjust for multiclass if necessary
+            roc_auc = roc_auc_score(targets, pred_probabilities)
+        except ValueError as e:
+            print(f"ROC AUC calculation error: {e}")
 
-    return r2, accuracy, conf_matrix, precision, recall, f1
+    return r2, accuracy, conf_matrix, precision, recall, f1, roc_auc
 
 
 # Get the project directory path
@@ -55,33 +61,59 @@ project_dir = os.getcwd()
 train_data_dir = os.path.join(project_dir, 'Data', 'train_data')
 
 # Use a list comprehension to create a list of all CSV file paths
-#csv_files = [f'{train_data_dir}/{file}' for file in os.listdir(train_data_dir) if file.endswith('.csv')]
+#csv_files_train = [f'{train_data_dir}/{file}' for file in os.listdir(train_data_dir) if file.endswith('.csv')]
 
 # Use a list comprehension to create a list of all CSV file paths, limiting to the first two
-csv_files = [f'{train_data_dir}/{file}' for file in os.listdir(train_data_dir) if file.endswith('.csv')][:2]
+csv_files = [f'{train_data_dir}/{file}' for file in os.listdir(train_data_dir) if file.endswith('.csv')]
+
+csv_files_train = csv_files[:1]
+csv_files_holdout = csv_files[9:10]
+
 
 # Use a dictionary comprehension to read each CSV file into a DataFrame
 # The keys of the dictionary will be the file names, and the values will be the DataFrames
-train_split = {file: pd.read_csv(file) for file in csv_files}
+train_dataframes = {file: pd.read_csv(file) for file in csv_files_train}
 
-# Assuming train_dataframes is a dictionary where the key is the filename and the value is the DataFrame
-train_dataframes = {}
-hold_out_dataframes = {}
+# Use a dictionary comprehension to read each CSV file into a DataFrame
+# The keys of the dictionary will be the file names, and the values will be the DataFrames
+hold_out_dataframes = {file: pd.read_csv(file) for file in csv_files_holdout}
 
-for filename, df in train_split.items():
-    train_df, hold_out_df = train_test_split(df, test_size=0.5, random_state=17)  # Adjust test_size as needed
+print(hold_out_dataframes.keys(), train_dataframes.keys())
+
+'''for filename, df in train_split.items():
+    train_df, hold_out_df = train_test_split(df, test_size=0.1, random_state=17)  # Adjust test_size as needed
     train_dataframes[filename] = train_df
-    hold_out_dataframes[filename] = hold_out_df
+    hold_out_dataframes[filename] = hold_out_df'''
 
 test_data_dir = os.path.join(project_dir, 'Data', 'test_data')
 
 # Use a list comprehension to create a list of all CSV file paths
-#csv_files = [f'{test_data_dir}/{file}' for file in os.listdir(test_data_dir) if file.endswith('.csv')]
+#csv_files_test = [f'{test_data_dir}/{file}' for file in os.listdir(test_data_dir) if file.endswith('.csv')]
 
 # Use a list comprehension to create a list of all CSV file paths, limiting to the first two
-csv_files = [f'{test_data_dir}/{file}' for file in os.listdir(test_data_dir) if file.endswith('.csv')][:1]
+#csv_files_test = [f'{test_data_dir}/{file}' for file in os.listdir(test_data_dir) if file.endswith('.csv')][:1]
 
-test_dataframes = {file: pd.read_csv(file) for file in csv_files}
+#test_dataframes = {file: pd.read_csv(file) for file in csv_files_test}
+
+
+#TEST CODE ONLY
+# List all files in the directory and get their sizes
+csv_files_test = [(file, os.path.getsize(os.path.join(test_data_dir, file)))
+             for file in os.listdir(test_data_dir)
+             if file.endswith('.csv')]
+
+# Sort files based on size (second element of the tuple)
+csv_files_test.sort(key=lambda x: x[1])
+
+# Select the smallest file (first in the sorted list)
+if csv_files_test:  # Ensure there are files in the list
+    smallest_file = csv_files_test[0][0]  # Correctly reference the sorted list
+    smallest_file_path = os.path.join(test_data_dir, smallest_file)
+    # Load the smallest file into a DataFrame and store it in a dictionary with the file name as the key
+    test_dataframes = {smallest_file: pd.read_csv(smallest_file_path)}
+    print(f"Loaded smallest file: {smallest_file}")
+else:
+    print("No CSV files found in the directory.")
 
 # Configure tensorboard logger
 configure('runs/MelSpec_reg_lr0.0001_big_ELU_Adam_noteacc', flush_secs=2)
@@ -89,19 +121,17 @@ configure('runs/MelSpec_reg_lr0.0001_big_ELU_Adam_noteacc', flush_secs=2)
 # Function to convert JSON-encoded strings back to numpy arrays
 # Very important function that was  customized to fit our data. It won't work otherwise
 def custom_spectrogram_parser(spect_str, max_length):
-    if isinstance(spect_str, np.ndarray):
-        return spect_str  # If already an array, return as is
     try:
-        cleaned_str = spect_str.strip('[]')
-        array = np.array([float(num) for num in cleaned_str.split() if num.strip()])
-        # Ensure the array is padded to max_length
+        array = np.array([float(num) for num in spect_str.strip('[]').split() if num.strip()])
         if array.size < max_length:
             array = np.pad(array, (0, max_length - array.size), mode='constant')
-        assert array.size == max_length, f"Array length after padding is {array.size}, expected {max_length}"
+        elif array.size > max_length:
+            array = array[:max_length]
         return array
     except Exception as e:
         print(f"Error parsing spectrogram: {e}")
         return np.zeros(max_length)  # Ensure consistent shape
+
 
 def normalize_spectrograms(spect, mean, std, epsilon=1e-10):
     normalized_spect = (spect - mean) / (std + epsilon)  # Adding epsilon to avoid division by zero
@@ -137,7 +167,6 @@ mean, std = compute_normalization_constants(hold_out_dataframes, max_length)
 
 # Processing dataframes
 process_dataframes(train_dataframes, max_length)
-process_dataframes(hold_out_dataframes, max_length)
 process_dataframes(test_dataframes, max_length)
 
 # Define Model
@@ -152,15 +181,12 @@ batch_time = AverageMeter()
 data_time = AverageMeter()
 
 
-train_loss = 0
-validation_loss = 0
-
 # Epoch is set into 1 because it is very slow at the moment. It is just for testing purposes
 
 num_epochs = 20
 best_val = 0.0
 
-
+print("Training model...")
 for epoch in range(num_epochs):
 
     # Training loop
@@ -168,6 +194,7 @@ for epoch in range(num_epochs):
     end = time.time()
     all_predictions = []
     all_targets = []
+    all_predictions_prob = []
 
     losses = AverageMeter()
 
@@ -187,7 +214,6 @@ for epoch in range(num_epochs):
             print("Object dtype found in Spectrogram arrays")
 
         inputs = np.vstack(df['Spectrogram'].values)
-
         # Double-check inputs dtype and convert to float32 if not already
         if inputs.dtype != np.float32:
             inputs = inputs.astype(np.float32)
@@ -220,8 +246,13 @@ for epoch in range(num_epochs):
         # Forward pass
         out = model.forward(inputs)
 
+
+        probabilities = torch.sigmoid(out).detach().cpu().numpy()
         all_predictions.extend(out.data.cpu().numpy())
         all_targets.extend(targets.data.cpu().numpy())
+        all_predictions_prob.extend(probabilities)
+
+
         loss = criterion(out, targets)
 
         loss.backward()
@@ -238,15 +269,26 @@ for epoch in range(num_epochs):
               'Loss {losses.val:.4f} ({losses.avg:.4f})'.format(
             epoch + 1, num_epochs, batch_time=batch_time, losses=losses))
 
+    pred_prob = np.array(all_predictions_prob)
+    if len(all_predictions) > 0 and len(all_targets) > 0:
+        # Check if probabilities need reshaping
+        if pred_prob.ndim == 2 and pred_prob.shape[1] == 1:
+            probs = pred_prob.squeeze(1)  # Removes the second dimension if it's unnecessary
+        else:
+            probs = pred_prob
 
-    # Inside your training loop
-    train_r2, train_accuracy, train_conf_matrix, train_precision, train_recall, train_f1 = evaluate_classification(
-        np.array(all_targets), np.array(all_predictions))
-
-    print(
-        f"Epoch {epoch + 1}/{num_epochs}, Training Loss: {losses.avg:.4f}, Training R2: {train_r2:.4f}, Training Accuracy: {train_accuracy:.2f}%")
-    print(f"Training Confusion Matrix:\n{train_conf_matrix}")
-    print(f"Training Precision: {train_precision:.4f}, Recall: {train_recall:.4f}, F1-Score: {train_f1:.4f}")
+        train_r2, train_accuracy, train_conf_matrix, train_precision, train_recall, train_f1, train_roc_auc = evaluate_classification(
+            targets=np.array(all_targets),
+            predictions=np.array(all_predictions),
+            pred_probabilities=probs
+        )
+        print(f"Epoch {epoch + 1}/{num_epochs}, Training R2: {train_r2:.4f}, Accuracy: {train_accuracy:.2f}%")
+        print(f"Confusion Matrix:\n{train_conf_matrix}")
+        print(f"Training Precision: {train_precision:.4f}, Recall: {train_recall:.4f}, F1-Score: {train_f1:.4f}")
+        if train_roc_auc is not None:
+            print(f"Training ROC AUC: {train_roc_auc:.4f}")
+    else:
+        print("No predictions or targets available for evaluation.")
 
     # Log metrics (if using TensorBoard or any other logging tool)
     log_value('Train Loss', losses.avg, epoch)
@@ -268,7 +310,7 @@ for epoch in range(num_epochs):
     validation_losses = AverageMeter()  # Reset validation loss meter
     all_val_predictions = []
     all_val_targets = []
-
+    all_val_probs = []
     #our metrics - not used
     total_val_loss = 0
 
@@ -278,42 +320,34 @@ for epoch in range(num_epochs):
         if any(isinstance(x, np.ndarray) and x.dtype == object for x in df['Spectrogram']):
             print("Object dtype found in Spectrogram arrays")
 
-        inputs = np.vstack(df['Spectrogram'].values)
-
-        # Double-check inputs dtype and convert to float32 if not already
-        if inputs.dtype != np.float32:
-            inputs = inputs.astype(np.float32)
-
-        # Convert to PyTorch tensor
         try:
-            inputs = torch.tensor(inputs).unsqueeze(1)  # Ensure correct shape [N, C, H, W]
+            inputs = np.vstack(df['Spectrogram'].values)
+            inputs = inputs.astype(np.float32)  # Ensure that the data type is float32
+
+            # Convert to PyTorch tensor and adjust shape
+            inputs = torch.tensor(inputs).unsqueeze(1)  # Add a channel dimension
+            inputs = inputs.view(-1, 1, 254, 1)  # Reshape to match the expected input of the model
+
+            targets = df['onset'].values
+            targets = torch.tensor(targets, dtype=torch.float32).view(-1, 1)
+
+            model.init_hidden(inputs.size(0))  # Initialize hidden state for the model
+            model.eval()  # Set the model to evaluation mode
+
+            with torch.no_grad():  # Disables gradient calculation to save memory and computations
+                outputs = model(inputs)
+                loss = criterion(outputs, targets)
+                validation_losses.update(loss.item(), inputs.size(0))
+
+                probabilities = torch.sigmoid(outputs).detach().cpu().numpy()
+                all_val_predictions.extend(outputs.cpu().numpy())
+                all_val_targets.extend(targets.cpu().numpy())
+                all_val_probs.extend(probabilities)
+
         except TypeError as e:
-            print("Failed to convert inputs to a tensor:", e)
+            print(f"Failed to convert inputs to a tensor: {e}")
             print("Inputs dtype:", inputs.dtype)
-            break  # Break to avoid proceeding with incorrect data\
-
-        inputs = inputs.view(-1, 1, 254, 1)
-
-        targets = torch.tensor(df['onset'].values, dtype=torch.float32)  # Assuming 'onset' contains the target values
-        data_time.update(time.time() - end)
-        inputs = Variable(inputs, requires_grad=False)
-        targets = Variable(targets, requires_grad=False)
-        targets = targets.view(-1, 1)
-
-        # Initialize hidden state
-        model.init_hidden(inputs.size(0))
-
-        # Forward pass
-        out = model.forward(inputs)
-        # Ensure dimensions [batch_size, channels, height, width]
-
-        # Our metrics
-        with torch.no_grad():
-            outputs = model(inputs)
-            loss = criterion(outputs, targets)
-            validation_losses.update(loss.item(), inputs.size(0))
-            all_val_predictions.extend(outputs.cpu().numpy())
-            all_val_targets.extend(targets.cpu().numpy())
+            continue  # Skip this iteration and continue with the next file
 
         # Optional: print progress for each batch in the validation loop
         print('Validation - Epoch: [{0}/{1}]\t'
@@ -324,14 +358,30 @@ for epoch in range(num_epochs):
         total_val_loss += loss.item() * inputs.size(0)
 
 
-    # Inside your validation loop
-    val_r2, val_accuracy, val_conf_matrix, val_precision, val_recall, val_f1 = evaluate_classification(
-        np.array(all_val_targets), np.array(all_val_predictions))
 
-    print(
-        f"Epoch {epoch + 1}/{num_epochs}, Validation Loss: {validation_losses.avg:.4f}, Validation R2: {val_r2:.4f}, Validation Accuracy: {val_accuracy:.2f}%")
-    print(f"Validation Confusion Matrix:\n{val_conf_matrix}")
-    print(f"Validation Precision: {val_precision:.4f}, Recall: {val_recall:.4f}, F1-Score: {val_f1:.4f}")
+        # Convert list of probabilities to an appropriate format if needed
+        probs_val = np.array(all_val_probs)
+        if len(all_val_predictions) > 0 and len(all_val_targets) > 0:
+            # Check if probabilities need reshaping
+            if probs_val.ndim == 2 and probs_val.shape[1] == 1:
+                probs = probs_val.squeeze(1)  # Removes the second dimension if it's unnecessary
+            else:
+                probs = probs_val
+
+            # Ensure all_predictions_prob is the array of prediction probabilities
+            val_r2, val_accuracy, val_conf_matrix, val_precision, val_recall, val_f1, val_roc_auc = evaluate_classification(
+                targets=np.array(all_val_targets),
+                predictions=np.array(all_val_predictions),
+                pred_probabilities=np.array(all_val_probs)
+                # Ensure this is the probability of the positive class
+            )
+            print(f"Epoch {epoch + 1}/{num_epochs}, Validation R2: {val_r2:.4f}, Accuracy: {val_accuracy:.2f}%")
+            print(f"Confusion Matrix:\n{val_conf_matrix}")
+            print(f"Validation Precision: {val_precision:.4f}, Recall: {val_recall:.4f}, F1-Score: {val_f1:.4f}")
+            if val_roc_auc is not None:
+                print(f"Validation ROC AUC: {val_roc_auc:.4f}")
+        else:
+            print("No predictions or targets available for evaluation.")
 
     # Log validation metrics
     log_value('Validation Loss', validation_losses.avg, epoch)

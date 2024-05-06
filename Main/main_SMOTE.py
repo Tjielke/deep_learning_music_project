@@ -14,6 +14,16 @@ from model_build import SpectralCRNN_Reg_Dropout, SpectralCRNN
 from sklearn.model_selection import train_test_split
 from imblearn.combine import SMOTEENN
 from imblearn.over_sampling import SMOTE
+import datetime
+
+
+# Get the current time
+current_time = datetime.datetime.now()
+
+# Print the current time
+print("Program started at:", current_time.strftime("%Y-%m-%d %H:%M:%S"))
+
+
 
 class AverageMeter(object):
     """Computes and stores the average and current value"""
@@ -32,10 +42,8 @@ class AverageMeter(object):
 
 def evaluate_classification(targets, predictions, pred_probabilities=None):
     r2 = metrics.r2_score(targets, predictions)
-    targets = np.round(targets*10).astype(int)
-    predictions = predictions * 10
-    predictions[predictions < 0] = 0
-    predictions[predictions > 10] = 10
+    targets = np.round(targets).astype(int)
+    predictions = 1 / (1 + np.exp(-predictions))  # Apply sigmoid function
     predictions = np.round(predictions).astype(int)
     accuracy = metrics.accuracy_score(targets, predictions) * 100
 
@@ -65,33 +73,40 @@ project_dir = os.getcwd()
 train_data_dir = os.path.join(project_dir, 'Data', 'train_data')
 
 # Use a list comprehension to create a list of all CSV file paths
-#csv_files = [f'{train_data_dir}/{file}' for file in os.listdir(train_data_dir) if file.endswith('.csv')]
+#csv_files_train = [f'{train_data_dir}/{file}' for file in os.listdir(train_data_dir) if file.endswith('.csv')]
 
 # Use a list comprehension to create a list of all CSV file paths, limiting to the first two
-csv_files = [f'{train_data_dir}/{file}' for file in os.listdir(train_data_dir) if file.endswith('.csv')][:1]
+csv_files = [f'{train_data_dir}/{file}' for file in os.listdir(train_data_dir) if file.endswith('.csv')]
+
+csv_files_train = csv_files[:1]
+csv_files_holdout = csv_files[9:10]
+
 
 # Use a dictionary comprehension to read each CSV file into a DataFrame
 # The keys of the dictionary will be the file names, and the values will be the DataFrames
-train_split = {file: pd.read_csv(file) for file in csv_files}
+train_dataframes = {file: pd.read_csv(file) for file in csv_files_train}
 
-# Assuming train_dataframes is a dictionary where the key is the filename and the value is the DataFrame
-train_dataframes = {}
-hold_out_dataframes = {}
+# Use a dictionary comprehension to read each CSV file into a DataFrame
+# The keys of the dictionary will be the file names, and the values will be the DataFrames
+hold_out_dataframes = {file: pd.read_csv(file) for file in csv_files_holdout}
 
-for filename, df in train_split.items():
-    train_df, hold_out_df = train_test_split(df, test_size=0.5, random_state=17)  # Adjust test_size as needed
+print(hold_out_dataframes.keys(), train_dataframes.keys())
+
+
+'''for filename, df in train_split.items():
+    train_df, hold_out_df = train_test_split(df, test_size=0.1, random_state=17)  # Adjust test_size as needed
     train_dataframes[filename] = train_df
-    hold_out_dataframes[filename] = hold_out_df
+    hold_out_dataframes[filename] = hold_out_df'''
 
 test_data_dir = os.path.join(project_dir, 'Data', 'test_data')
 
 # Use a list comprehension to create a list of all CSV file paths
-#csv_files = [f'{test_data_dir}/{file}' for file in os.listdir(test_data_dir) if file.endswith('.csv')]
+#csv_files_test = [f'{test_data_dir}/{file}' for file in os.listdir(test_data_dir) if file.endswith('.csv')]
 
 # Use a list comprehension to create a list of all CSV file paths, limiting to the first two
-csv_files = [f'{test_data_dir}/{file}' for file in os.listdir(test_data_dir) if file.endswith('.csv')][:1]
+csv_files_test = [f'{test_data_dir}/{file}' for file in os.listdir(test_data_dir) if file.endswith('.csv')][:1]
 
-test_dataframes = {file: pd.read_csv(file) for file in csv_files}
+test_dataframes = {file: pd.read_csv(file) for file in csv_files_test}
 
 # Configure tensorboard logger
 configure('runs/MelSpec_reg_lr0.0001_big_ELU_Adam_noteacc', flush_secs=2)
@@ -155,7 +170,6 @@ mean, std = compute_normalization_constants(hold_out_dataframes, max_length)
 
 # Processing dataframes
 process_dataframes(train_dataframes, max_length)
-process_dataframes(hold_out_dataframes, max_length)
 process_dataframes(test_dataframes, max_length)
 
 
@@ -165,6 +179,8 @@ batch_size = 64
 # Example function to flatten and then reshape data
 def apply_custom_smote(features, labels, smote_percentage):
     # Calculate the desired ratio based on the percentage
+    original_counts = np.bincount(labels)
+    print(f"Original class distribution: {dict(enumerate(original_counts))}")
     majority_class_count = np.bincount(labels).max()
     minority_class_count = np.bincount(labels).min()
     if smote_percentage > 0:
@@ -182,6 +198,11 @@ def apply_custom_smote(features, labels, smote_percentage):
     sampling_strategy = {1: target_minority_count}  # Assuming class '1' is the minority class
     smote = SMOTEENN(sampling_strategy=sampling_strategy, random_state=17)
     features_resampled, labels_resampled = smote.fit_resample(features, labels)
+
+    # Print resampled class distribution
+    resampled_counts = np.bincount(labels_resampled)
+    print(f"Resampled class distribution: {dict(enumerate(resampled_counts))}")
+
     return features_resampled, labels_resampled
 
 def apply_smote(features, labels, percentage=100):
@@ -216,7 +237,7 @@ print("Shapes:", train_features.shape, train_labels.shape)
 # Flatten features for SMOTE
 train_features_flat = train_features.reshape(train_features.shape[0], -1)
 # Apply SMOTE at 100%
-X_resampled, y_resampled = apply_smote(train_features_flat, train_labels, 100)
+X_resampled, y_resampled = apply_custom_smote(train_features_flat, train_labels, 100)
 # Reshape for model input
 X_resampled = X_resampled.reshape(-1, 1, max_length, X_resampled.shape[1] // max_length)
 
@@ -355,56 +376,37 @@ for epoch in range(num_epochs):
     #our metrics - not used
     total_val_loss = 0
 
-    for file, df in test_dataframes.items():  # Loop over test dataframes
-
-        # Inspect data before stacking to ensure there are no objects
-        if any(isinstance(x, np.ndarray) and x.dtype == object for x in df['Spectrogram']):
-            print("Object dtype found in Spectrogram arrays")
-
-        inputs = np.vstack(df['Spectrogram'].values)
-
-        # Double-check inputs dtype and convert to float32 if not already
-        if inputs.dtype != np.float32:
-            inputs = inputs.astype(np.float32)
-
-        # Convert to PyTorch tensor
+    for file, df in test_dataframes.items():
         try:
-            inputs = torch.tensor(inputs).unsqueeze(1)  # Ensure correct shape [N, C, H, W]
-        except TypeError as e:
-            print("Failed to convert inputs to a tensor:", e)
-            print("Inputs dtype:", inputs.dtype)
-            break  # Break to avoid proceeding with incorrect data\
+            inputs = np.vstack(df['Spectrogram'].values)
+            inputs = inputs.astype(np.float32)  # Ensures that the input is float32
+            inputs = torch.tensor(inputs).unsqueeze(1)  # Convert to tensor and add channel dimension
+            inputs = inputs.view(-1, 1, 254, 1)  # Ensure correct shape
 
-        inputs = inputs.view(-1, 1, 254, 1)
+            targets = df['onset'].values
+            targets = torch.tensor(targets, dtype=torch.float32).view(-1, 1)
 
-        targets = torch.tensor(df['onset'].values, dtype=torch.float32)  # Assuming 'onset' contains the target values
-        data_time.update(time.time() - end)
-        inputs = Variable(inputs, requires_grad=False)
-        targets = Variable(targets, requires_grad=False)
-        targets = targets.view(-1, 1)
+            model.init_hidden(inputs.size(0))  # Initialize hidden state for the model
+            model.eval()  # Set the model to evaluation mode
 
-        # Initialize hidden state
-        model.init_hidden(inputs.size(0))
+            with torch.no_grad():  # Disable gradient computation for validation
+                outputs = model(inputs)
+                probabilities = torch.sigmoid(outputs).detach().cpu().numpy()
+                loss = criterion(outputs, targets)
+                validation_losses.update(loss.item(), inputs.size(0))
 
-        # Forward pass
-        out = model.forward(inputs)
-        # Ensure dimensions [batch_size, channels, height, width]
+                all_val_predictions.extend(outputs.cpu().numpy())
+                all_val_targets.extend(targets.cpu().numpy())
+                all_val_probs.extend(probabilities)
 
-        # Our metrics
-        with torch.no_grad():
-            outputs = model(inputs)
-            loss = criterion(outputs, targets)
-            validation_losses.update(loss.item(), inputs.size(0))
-            probabilities = torch.sigmoid(out).detach().cpu().numpy()
-            all_val_predictions.extend(outputs.cpu().numpy())
-            all_val_targets.extend(targets.cpu().numpy())
-            all_val_probs.extend(probabilities)
+        except Exception as e:
+            print(f"An error occurred while processing file {file}: {e}")
 
-        # Optional: print progress for each batch in the validation loop
+        '''# Optional: print progress for each batch in the validation loop
         print('Validation - Epoch: [{0}/{1}]\t'
               'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
               'Loss {validation_losses.val:.4f} ({validation_losses.avg:.4f})'.format(
-            epoch + 1, num_epochs, batch_time=batch_time, validation_losses=validation_losses))
+            epoch + 1, num_epochs, batch_time=batch_time, validation_losses=validation_losses))'''
 
         total_val_loss += loss.item() * inputs.size(0)
 
@@ -412,7 +414,7 @@ for epoch in range(num_epochs):
 
     # Convert list of probabilities to an appropriate format if needed
     probs_val = np.array(all_val_probs)
-    if len(all_predictions) > 0 and len(all_targets) > 0:
+    if len(all_val_predictions) > 0 and len(all_val_targets) > 0:
         # Check if probabilities need reshaping
         if probs_val.ndim == 2 and probs_val.shape[1] == 1:
             probs = probs_val.squeeze(1)  # Removes the second dimension if it's unnecessary
@@ -421,9 +423,9 @@ for epoch in range(num_epochs):
 
         # Ensure all_predictions_prob is the array of prediction probabilities
         val_r2, val_accuracy, val_conf_matrix, val_precision, val_recall, val_f1, val_roc_auc = evaluate_classification(
-            targets=np.array(all_targets),
-            predictions=np.array(all_predictions),
-            pred_probabilities=np.array(all_predictions_prob)  # Ensure this is the probability of the positive class
+            targets=np.array(all_val_targets),
+            predictions=np.array(all_val_predictions),
+            pred_probabilities=np.array(all_val_probs)  # Ensure this is the probability of the positive class
         )
         print(f"Epoch {epoch + 1}/{num_epochs}, Validation R2: {val_r2:.4f}, Accuracy: {val_accuracy:.2f}%")
         print(f"Confusion Matrix:\n{val_conf_matrix}")
@@ -445,3 +447,8 @@ for epoch in range(num_epochs):
         best_val = val_r2
         torch.save(model.state_dict(), 'model_SpectralCRNN_reg_lr0.0001_big_ELU_Adam_noteacc.pth')
 
+# Get the current time
+current_time = datetime.datetime.now()
+
+# Print the current time
+print("Program finished at:", current_time.strftime("%Y-%m-%d %H:%M:%S"))
