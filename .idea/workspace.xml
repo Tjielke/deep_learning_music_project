@@ -4,7 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0173393e-eda8-4031-9256-1797ad9f8d32" name="Changes" comment="Reorganised Files to reduce information overload" />
+    <list default="true" id="0173393e-eda8-4031-9256-1797ad9f8d32" name="Changes" comment="Deleted Skeleton.ipynb">
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Main/model_build.py" beforeDir="false" afterPath="$PROJECT_DIR$/Main/model_build.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -13,6 +17,7 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="HTML File" />
         <option value="Jupyter Notebook" />
         <option value="Python Script" />
       </list>
@@ -32,37 +37,63 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 5
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 5
+}</component>
   <component name="ProjectId" id="2dgEdg9FXq31gbEq6NTmRyXV3je" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "C:/Users/20182877/JADS C schijf/Year_2/Semester_2/Deep Learning/Assignment",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/georg/PycharmProjects/PostNLconsultancy&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\georg\PycharmProjects\deep_learning_music_project\Main" />
+      <recent name="C:\Users\georg\PycharmProjects\deep_learning_music_project" />
+      <recent name="C:\Users\georg\PycharmProjects\deep_learning_music_project\unused_code" />
       <recent name="C:\Users\georg\PycharmProjects\deep_learning_music_project\Main\data_loading" />
       <recent name="C:\Users\georg\PycharmProjects\deep_learning_music_project\Main\model_build" />
-      <recent name="C:\Users\georg\PycharmProjects\deep_learning_music_project\unused_code" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.pre_processing">
+  <component name="RunManager">
+    <configuration name="download" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Assignment" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/onset-replication" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/onset-replication/download.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Assignment" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -109,8 +140,9 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.pre_processing" />
+        <item itemvalue="Python.download" />
         <item itemvalue="Python.main" />
+        <item itemvalue="Python.pre_processing" />
       </list>
     </recent_temporary>
   </component>
@@ -128,7 +160,19 @@
       <workItem from="1713795481535" duration="418000" />
       <workItem from="1714374497757" duration="7360000" />
       <workItem from="1714464360640" duration="15196000" />
-      <workItem from="1714676754468" duration="2401000" />
+      <workItem from="1714676754468" duration="3865000" />
+      <workItem from="1714728554250" duration="23510000" />
+      <workItem from="1714770450944" duration="358000" />
+      <workItem from="1714770951574" duration="715000" />
+      <workItem from="1714819816122" duration="14344000" />
+      <workItem from="1714848084104" duration="100000" />
+      <workItem from="1714848306079" duration="5982000" />
+      <workItem from="1714908214885" duration="746000" />
+      <workItem from="1714919623331" duration="2143000" />
+      <workItem from="1714927144336" duration="4021000" />
+      <workItem from="1714931208987" duration="16123000" />
+      <workItem from="1714984659768" duration="13827000" />
+      <workItem from="1715014792285" duration="9612000" />
     </task>
     <task id="LOCAL-00001" summary="updated the requirements file with required packages">
       <created>1710422295441</created>
@@ -194,7 +238,183 @@
       <option name="project" value="LOCAL" />
       <updated>1714680667430</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Added a placeholder txt just to share a common place for our data directory (Since we cannot upload them)">
+      <option name="closed" value="true" />
+      <created>1714680889158</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1714680889158</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Changed epoch from 250 to 50">
+      <option name="closed" value="true" />
+      <created>1714682134329</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1714682134329</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Commit changes so Tjielke can work with me.">
+      <option name="closed" value="true" />
+      <created>1714742092314</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1714742092314</updated>
+    </task>
+    <task id="LOCAL-00013" summary="Changed model_build, changed target value so it is always float, changed input and also added a function that apply a custom spectogram parser">
+      <option name="closed" value="true" />
+      <created>1714747057814</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1714747057814</updated>
+    </task>
+    <task id="LOCAL-00014" summary="Fixed most of the problems. Metrics only show loss. Evaluation is not working.">
+      <option name="closed" value="true" />
+      <created>1714770293132</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1714770293132</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Added comments to the code to improve clarity.">
+      <option name="closed" value="true" />
+      <created>1714770756441</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1714770756441</updated>
+    </task>
+    <task id="LOCAL-00016" summary="Added metrics, removed unused code.">
+      <option name="closed" value="true" />
+      <created>1714825670085</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1714825670085</updated>
+    </task>
+    <task id="LOCAL-00017" summary="Moved data_loading to unused code. Added data exploration to pandas and a data to Excel file. Purpose: To explore the skewness in our data.">
+      <option name="closed" value="true" />
+      <created>1714839524525</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1714839524525</updated>
+    </task>
+    <task id="LOCAL-00018" summary="Added a new Model CRNN(not working at the moment). improved metrics (made them more strict). Added validation metrics">
+      <option name="closed" value="true" />
+      <created>1714841762185</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1714841762185</updated>
+    </task>
+    <task id="LOCAL-00019" summary="Added normalisation with a holdout set, change the transformation of the data to happen only once and now accuracy is 100% instead of 1.0%">
+      <option name="closed" value="true" />
+      <created>1714857956813</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1714857956813</updated>
+    </task>
+    <task id="LOCAL-00020" summary="Moved SpectralDataset.py as it is not used">
+      <option name="closed" value="true" />
+      <created>1714858022557</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1714858022557</updated>
+    </task>
+    <task id="LOCAL-00021" summary="Added proportions in data exploration with visuals that explain the skewness in our data.">
+      <option name="closed" value="true" />
+      <created>1714920555549</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1714920555549</updated>
+    </task>
+    <task id="LOCAL-00022" summary="Added SMOTE, SMOTEENN to resample the dataset. Implemented ROC AUC. ROC is a probability curve and AUC represents the degree or measure of separability. Essentially, it tells how much a model is capable of distinguishing between classes.">
+      <option name="closed" value="true" />
+      <created>1714944973192</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1714944973192</updated>
+    </task>
+    <task id="LOCAL-00023" summary="Fixed the zero_grad position on main as it was after forward pass.">
+      <option name="closed" value="true" />
+      <created>1714945019943</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1714945019943</updated>
+    </task>
+    <task id="LOCAL-00024" summary="Commented some metrics, as now we implement batching! Those metrics were &quot;spamming&quot; the console making it unreadable.">
+      <option name="closed" value="true" />
+      <created>1714945078648</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1714945078648</updated>
+    </task>
+    <task id="LOCAL-00025" summary="Made plots for different SMOTE and SMOTEENN. Made it clearer on how are data responding to the resampling methods.">
+      <option name="closed" value="true" />
+      <created>1714945138333</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1714945138333</updated>
+    </task>
+    <task id="LOCAL-00026" summary="Added metrics and plots for average proportion of our labels.">
+      <option name="closed" value="true" />
+      <created>1714945205154</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1714945205154</updated>
+    </task>
+    <task id="LOCAL-00027" summary="Test file for our evaluation metrics. Needs to be expanded with ROC AUC">
+      <option name="closed" value="true" />
+      <created>1714945335405</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1714945335405</updated>
+    </task>
+    <task id="LOCAL-00028" summary="Removed unnecessary comments">
+      <option name="closed" value="true" />
+      <created>1714945381225</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1714945381225</updated>
+    </task>
+    <task id="LOCAL-00029" summary="Fixing path for reproducability.">
+      <option name="closed" value="true" />
+      <created>1715025978112</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1715025978112</updated>
+    </task>
+    <task id="LOCAL-00030" summary="Fixed a lot of bugs. Now confusion matrix is 2x2 (meaning our predictions were wrong).Fixed holdout_set. Validation is working properly.">
+      <option name="closed" value="true" />
+      <created>1715026198605</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1715026198605</updated>
+    </task>
+    <task id="LOCAL-00031" summary="Deleted Skeleton.ipynb">
+      <option name="closed" value="true" />
+      <created>1715026413877</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1715026413877</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -212,15 +432,46 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="updated the requirements file with required packages" />
-    <MESSAGE value="Created a file called model build. In this file, the model is build and can be altered. The main file contains the training stuff and all other files are converted to .py files to make them faster and to be able to import the functions" />
     <MESSAGE value="Incredible changes, my goodness. Main issue was the installing of packages and the dependencies between the scripts, fixed those and now trying to make the main.py work" />
     <MESSAGE value="Created a magnificently working function for preprocessing the wav files together with the csv files. The function creates a dataframe in which the onset times, the start and end of the sample are connected to the spectogram. This is subsequently saved in the path of your choosing" />
     <MESSAGE value="Reorganised Files to reduce information overload" />
-    <option name="LAST_COMMIT_MESSAGE" value="Reorganised Files to reduce information overload" />
+    <MESSAGE value="Added a placeholder txt just to share a common place for our data directory (Since we cannot upload them)" />
+    <MESSAGE value="Changed epoch from 250 to 50" />
+    <MESSAGE value="Commit changes so Tjielke can work with me." />
+    <MESSAGE value="Changed model_build, changed target value so it is always float, changed input and also added a function that apply a custom spectogram parser" />
+    <MESSAGE value="Fixed most of the problems. Metrics only show loss. Evaluation is not working." />
+    <MESSAGE value="Added comments to the code to improve clarity." />
+    <MESSAGE value="Added metrics, removed unused code." />
+    <MESSAGE value="Moved data_loading to unused code. Added data exploration to pandas and a data to Excel file. Purpose: To explore the skewness in our data." />
+    <MESSAGE value="Added a new Model CRNN(not working at the moment). improved metrics (made them more strict). Added validation metrics" />
+    <MESSAGE value="Added normalisation with a holdout set, change the transformation of the data to happen only once and now accuracy is 100% instead of 1.0%" />
+    <MESSAGE value="Moved SpectralDataset.py as it is not used" />
+    <MESSAGE value="Added proportions in data exploration with visuals that explain the skewness in our data." />
+    <MESSAGE value="Added SMOTE, SMOTEENN to resample the dataset. Implemented ROC AUC. ROC is a probability curve and AUC represents the degree or measure of separability. Essentially, it tells how much a model is capable of distinguishing between classes." />
+    <MESSAGE value="Fixed the zero_grad position on main as it was after forward pass." />
+    <MESSAGE value="Commented some metrics, as now we implement batching! Those metrics were &quot;spamming&quot; the console making it unreadable." />
+    <MESSAGE value="Made plots for different SMOTE and SMOTEENN. Made it clearer on how are data responding to the resampling methods." />
+    <MESSAGE value="Added metrics and plots for average proportion of our labels." />
+    <MESSAGE value="Test file for our evaluation metrics. Needs to be expanded with ROC AUC" />
+    <MESSAGE value="Removed unnecessary comments" />
+    <MESSAGE value="Fixing path for reproducability." />
+    <MESSAGE value="Fixed a lot of bugs. Now confusion matrix is 2x2 (meaning our predictions were wrong).Fixed holdout_set. Validation is working properly." />
+    <MESSAGE value="Deleted Skeleton.ipynb" />
+    <option name="LAST_COMMIT_MESSAGE" value="Deleted Skeleton.ipynb" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/deep_learning_music_project$config.coverage" NAME="config Coverage Results" MODIFIED="1715003793600" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/onset-replication" />
+    <SUITE FILE_PATH="coverage/deep_learning_music_project$data_excel.coverage" NAME="data_excel Coverage Results" MODIFIED="1714837423755" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Main" />
+    <SUITE FILE_PATH="coverage/deep_learning_music_project$model_build.coverage" NAME="model_build Coverage Results" MODIFIED="1714746525787" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Main" />
+    <SUITE FILE_PATH="coverage/deep_learning_music_project$pre_processing_recreation.coverage" NAME="pre-processing_recreation Coverage Results" MODIFIED="1715025741788" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Main" />
+    <SUITE FILE_PATH="coverage/deep_learning_music_project$pre_processing_skewed.coverage" NAME="pre_processing_skewed Coverage Results" MODIFIED="1714928879737" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Assignment$pre_processing.coverage" NAME="pre_processing Coverage Results" MODIFIED="1714485299046" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Tjielke" />
+    <SUITE FILE_PATH="coverage/deep_learning_music_project$download.coverage" NAME="download Coverage Results" MODIFIED="1715001022199" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/onset-replication" />
+    <SUITE FILE_PATH="coverage/deep_learning_music_project$SMOTEEN_observation.coverage" NAME="SMOTEEN_observation Coverage Results" MODIFIED="1714941261825" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Main" />
     <SUITE FILE_PATH="coverage/Assignment$main.coverage" NAME="main Coverage Results" MODIFIED="1714469406954" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Tjielke" />
+    <SUITE FILE_PATH="coverage/deep_learning_music_project$test.coverage" NAME="test Coverage Results" MODIFIED="1714945289483" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Main" />
+    <SUITE FILE_PATH="coverage/deep_learning_music_project$main.coverage" NAME="main Coverage Results" MODIFIED="1715020215488" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Main" />
+    <SUITE FILE_PATH="coverage/deep_learning_music_project$data_exploration.coverage" NAME="data_exploration Coverage Results" MODIFIED="1714919782408" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Main" />
+    <SUITE FILE_PATH="coverage/deep_learning_music_project$main_SMOTE.coverage" NAME="main_SMOTE Coverage Results" MODIFIED="1715023134608" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Main" />
   </component>
 </project>
