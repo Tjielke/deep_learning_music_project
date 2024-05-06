@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0173393e-eda8-4031-9256-1797ad9f8d32" name="Changes" comment="Deleted Skeleton.ipynb">
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+    <list default="true" id="0173393e-eda8-4031-9256-1797ad9f8d32" name="Changes" comment="Adding train , holdout and test for onset_ISMIR_2012">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Main/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Main/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Main/main_SMOTE.py" beforeDir="false" afterPath="$PROJECT_DIR$/Main/main_SMOTE.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Main/model_build.py" beforeDir="false" afterPath="$PROJECT_DIR$/Main/model_build.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -172,7 +173,7 @@
       <workItem from="1714927144336" duration="4021000" />
       <workItem from="1714931208987" duration="16123000" />
       <workItem from="1714984659768" duration="13827000" />
-      <workItem from="1715014792285" duration="9612000" />
+      <workItem from="1715014792285" duration="14912000" />
     </task>
     <task id="LOCAL-00001" summary="updated the requirements file with required packages">
       <created>1710422295441</created>
@@ -414,7 +415,23 @@
       <option name="project" value="LOCAL" />
       <updated>1715026413877</updated>
     </task>
-    <option name="localTasksCounter" value="32" />
+    <task id="LOCAL-00032" summary="Updating xml">
+      <option name="closed" value="true" />
+      <created>1715026496724</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1715026496724</updated>
+    </task>
+    <task id="LOCAL-00033" summary="Adding train , holdout and test for onset_ISMIR_2012">
+      <option name="closed" value="true" />
+      <created>1715028015636</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1715028015636</updated>
+    </task>
+    <option name="localTasksCounter" value="34" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -432,8 +449,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Incredible changes, my goodness. Main issue was the installing of packages and the dependencies between the scripts, fixed those and now trying to make the main.py work" />
-    <MESSAGE value="Created a magnificently working function for preprocessing the wav files together with the csv files. The function creates a dataframe in which the onset times, the start and end of the sample are connected to the spectogram. This is subsequently saved in the path of your choosing" />
     <MESSAGE value="Reorganised Files to reduce information overload" />
     <MESSAGE value="Added a placeholder txt just to share a common place for our data directory (Since we cannot upload them)" />
     <MESSAGE value="Changed epoch from 250 to 50" />
@@ -457,7 +472,9 @@
     <MESSAGE value="Fixing path for reproducability." />
     <MESSAGE value="Fixed a lot of bugs. Now confusion matrix is 2x2 (meaning our predictions were wrong).Fixed holdout_set. Validation is working properly." />
     <MESSAGE value="Deleted Skeleton.ipynb" />
-    <option name="LAST_COMMIT_MESSAGE" value="Deleted Skeleton.ipynb" />
+    <MESSAGE value="Updating xml" />
+    <MESSAGE value="Adding train , holdout and test for onset_ISMIR_2012" />
+    <option name="LAST_COMMIT_MESSAGE" value="Adding train , holdout and test for onset_ISMIR_2012" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/deep_learning_music_project$config.coverage" NAME="config Coverage Results" MODIFIED="1715003793600" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/onset-replication" />
@@ -470,7 +487,7 @@
     <SUITE FILE_PATH="coverage/deep_learning_music_project$SMOTEEN_observation.coverage" NAME="SMOTEEN_observation Coverage Results" MODIFIED="1714941261825" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Main" />
     <SUITE FILE_PATH="coverage/Assignment$main.coverage" NAME="main Coverage Results" MODIFIED="1714469406954" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Tjielke" />
     <SUITE FILE_PATH="coverage/deep_learning_music_project$test.coverage" NAME="test Coverage Results" MODIFIED="1714945289483" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Main" />
-    <SUITE FILE_PATH="coverage/deep_learning_music_project$main.coverage" NAME="main Coverage Results" MODIFIED="1715020215488" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Main" />
+    <SUITE FILE_PATH="coverage/deep_learning_music_project$main.coverage" NAME="main Coverage Results" MODIFIED="1715032850504" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Main" />
     <SUITE FILE_PATH="coverage/deep_learning_music_project$data_exploration.coverage" NAME="data_exploration Coverage Results" MODIFIED="1714919782408" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Main" />
     <SUITE FILE_PATH="coverage/deep_learning_music_project$main_SMOTE.coverage" NAME="main_SMOTE Coverage Results" MODIFIED="1715023134608" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Main" />
   </component>
