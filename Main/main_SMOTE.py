@@ -78,8 +78,8 @@ train_data_dir = os.path.join(project_dir, 'Data', 'train_data')
 # Use a list comprehension to create a list of all CSV file paths, limiting to the first two
 csv_files = [f'{train_data_dir}/{file}' for file in os.listdir(train_data_dir) if file.endswith('.csv')]
 
-csv_files_train = csv_files[:1]
-csv_files_holdout = csv_files[9:10]
+csv_files_train = csv_files[:10]
+csv_files_holdout = csv_files[12:15]
 
 
 # Use a dictionary comprehension to read each CSV file into a DataFrame
@@ -93,18 +93,13 @@ hold_out_dataframes = {file: pd.read_csv(file) for file in csv_files_holdout}
 print(hold_out_dataframes.keys(), train_dataframes.keys())
 
 
-'''for filename, df in train_split.items():
-    train_df, hold_out_df = train_test_split(df, test_size=0.1, random_state=17)  # Adjust test_size as needed
-    train_dataframes[filename] = train_df
-    hold_out_dataframes[filename] = hold_out_df'''
-
 test_data_dir = os.path.join(project_dir, 'Data', 'test_data')
 
 # Use a list comprehension to create a list of all CSV file paths
 #csv_files_test = [f'{test_data_dir}/{file}' for file in os.listdir(test_data_dir) if file.endswith('.csv')]
 
 # Use a list comprehension to create a list of all CSV file paths, limiting to the first two
-csv_files_test = [f'{test_data_dir}/{file}' for file in os.listdir(test_data_dir) if file.endswith('.csv')][:1]
+csv_files_test = [f'{test_data_dir}/{file}' for file in os.listdir(test_data_dir) if file.endswith('.csv')][:3]
 
 test_dataframes = {file: pd.read_csv(file) for file in csv_files_test}
 
