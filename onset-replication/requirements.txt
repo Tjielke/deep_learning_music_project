@@ -1,0 +1,8 @@
+keras
+tensorflow
+cython>=0.25
+mido>=1.2.6
+numpy>=1.13.4
+scipy>=0.16
+madmom
+ffmpeg
