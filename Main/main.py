@@ -58,7 +58,10 @@ def evaluate_classification(targets, predictions, pred_probabilities=None):
 project_dir = os.getcwd()
 
 # Join the project directory path with the train_data directory
-train_data_dir = os.path.join(project_dir, 'Data', 'train_data')
+#train_data_dir = os.path.join(project_dir, 'Data', 'train_data')
+
+#ONLY_ISMIR_2012
+train_data_dir = os.path.join(project_dir, 'onsets_ISMIR_2012', 'new_csv_files')
 
 # Use a list comprehension to create a list of all CSV file paths
 #csv_files_train = [f'{train_data_dir}/{file}' for file in os.listdir(train_data_dir) if file.endswith('.csv')]
@@ -66,8 +69,11 @@ train_data_dir = os.path.join(project_dir, 'Data', 'train_data')
 # Use a list comprehension to create a list of all CSV file paths, limiting to the first two
 csv_files = [f'{train_data_dir}/{file}' for file in os.listdir(train_data_dir) if file.endswith('.csv')]
 
+print(len(csv_files)) #CHECK THE NUMBER OF CSV FILES AND ADJUST THE SLICING BELOW
+
 csv_files_train = csv_files[:1]
 csv_files_holdout = csv_files[9:10]
+
 
 
 # Use a dictionary comprehension to read each CSV file into a DataFrame
@@ -80,12 +86,19 @@ hold_out_dataframes = {file: pd.read_csv(file) for file in csv_files_holdout}
 
 print(hold_out_dataframes.keys(), train_dataframes.keys())
 
+#ONLY FOR ONSET_ISMIR - ADJUST THE SLICING csv_files[:]
+csv_files_test = csv_files[5:6]
+
+# Use a dictionary comprehension to read each CSV file into a DataFrame
+# The keys of the dictionary will be the file names, and the values will be the DataFrames
+test_dataframes = {file: pd.read_csv(file) for file in csv_files_test}
+
 '''for filename, df in train_split.items():
     train_df, hold_out_df = train_test_split(df, test_size=0.1, random_state=17)  # Adjust test_size as needed
     train_dataframes[filename] = train_df
     hold_out_dataframes[filename] = hold_out_df'''
 
-test_data_dir = os.path.join(project_dir, 'Data', 'test_data')
+#test_data_dir = os.path.join(project_dir, 'Data', 'test_data')
 
 # Use a list comprehension to create a list of all CSV file paths
 #csv_files_test = [f'{test_data_dir}/{file}' for file in os.listdir(test_data_dir) if file.endswith('.csv')]
@@ -96,9 +109,9 @@ test_data_dir = os.path.join(project_dir, 'Data', 'test_data')
 #test_dataframes = {file: pd.read_csv(file) for file in csv_files_test}
 
 
-#TEST CODE ONLY
+# WARNING - TEST CODE ONLY
 # List all files in the directory and get their sizes
-csv_files_test = [(file, os.path.getsize(os.path.join(test_data_dir, file)))
+'''csv_files_test = [(file, os.path.getsize(os.path.join(test_data_dir, file)))
              for file in os.listdir(test_data_dir)
              if file.endswith('.csv')]
 
@@ -113,7 +126,8 @@ if csv_files_test:  # Ensure there are files in the list
     test_dataframes = {smallest_file: pd.read_csv(smallest_file_path)}
     print(f"Loaded smallest file: {smallest_file}")
 else:
-    print("No CSV files found in the directory.")
+    print("No CSV files found in the directory.")'''
+#TEST CODE ENDS HERE
 
 # Configure tensorboard logger
 configure('runs/MelSpec_reg_lr0.0001_big_ELU_Adam_noteacc', flush_secs=2)
