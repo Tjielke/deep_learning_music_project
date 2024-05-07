@@ -69,4 +69,11 @@ pip install pandas
 pip install tensorflow
 pip install imbalanced-learn
 ```
-Then run main_SMOTE.py to replicate our results. Although since our results are not good, feel free to try other hyperparameters as well.
+Then run on Main/main_SMOTE.py to replicate our results. Although since our results are not good, feel free to try other hyperparameters as well.
+
+In the Main folder exists our project with data exploration, pre-processing files.
+
+In the unused_code folder, exists unused code and an early project that is fully functional and is about instrument identification but was discontinued. It was about the original dataset on Kaggle: https://www.kaggle.com/datasets/imsparsh/musicnet-dataset?resource=download
+You can find it in unused_code/Pytorch/Main.ipynb and run the file with configuration of the data as well. If you want to run it, you need to add a data directory inside the unused_code/Pytorch named Data, add the data from the kaggle dataset inside the directory and then run the jupyter notebook Main.ipynb. 
+
+Thank you for reading!
