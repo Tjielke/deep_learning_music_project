@@ -50,13 +50,13 @@ Vossarull_sad_start_end_spect_target
 Vossarull_tender_start_end_spect_target
 ```
 
-Save those files in a directory names train_data and test_data which is located  
+Save those files in a directory named train_data and test_data which is located  here:
 
 ```
 C:/pathtotheproject/Main/Data/
 ```
 
-Install the requirements.txt file. You can alternatively run the following commands in your terminal of your project:
+Then, install the requirements.txt file. You can alternatively run the following commands in your terminal of your project:
 ```
 pip install numpy
 pip install jupyter
