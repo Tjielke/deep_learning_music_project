@@ -10,7 +10,7 @@ from sklearn.metrics import roc_auc_score, confusion_matrix, precision_recall_fs
 import os
 import pandas as pd
 from model_build import SpectralCRNN_Reg_Dropout, SpectralCRNN
-
+from sklearn.model_selection import train_test_split
 
 
 
@@ -58,10 +58,10 @@ def evaluate_classification(targets, predictions, pred_probabilities=None):
 project_dir = os.getcwd()
 
 # Join the project directory path with the train_data directory
-train_data_dir = os.path.join(project_dir, 'Data', 'train_data')
+#train_data_dir = os.path.join(project_dir, 'Data', 'train_data')
 
 #ONLY_ISMIR_2012
-#train_data_dir = os.path.join(project_dir, 'onsets_ISMIR_2012', 'new_csv_files')
+train_data_dir = os.path.join(project_dir, 'onsets_ISMIR_2012', 'csv_large_label')
 
 # Use a list comprehension to create a list of all CSV file paths
 #csv_files_train = [f'{train_data_dir}/{file}' for file in os.listdir(train_data_dir) if file.endswith('.csv')]
@@ -69,11 +69,12 @@ train_data_dir = os.path.join(project_dir, 'Data', 'train_data')
 # Use a list comprehension to create a list of all CSV file paths, limiting to the first two
 csv_files = [f'{train_data_dir}/{file}' for file in os.listdir(train_data_dir) if file.endswith('.csv')]
 
-print(f"Number of files:", len(csv_files)) #CHECK THE NUMBER OF CSV FILES AND ADJUST THE SLICING BELOW
+print(len(csv_files)) #CHECK THE NUMBER OF CSV FILES AND ADJUST THE SLICING BELOW
 
-csv_files_train = csv_files[:1]
-csv_files_holdout = csv_files[9:10]
-
+csv_files_train_indices = [176, 175, 135, 27, 105, 109, 72, 123, 8, 71, 110, 55, 7, 64, 54, 90, 17, 80, 138, 181, 151, 148, 74, 18, 58, 171, 188, 166, 46, 196, 66, 117, 146, 106, 36, 40, 48, 163, 149, 184, 83, 82, 28, 200, 172, 2, 157, 122, 120, 79, 98, 189, 67, 154, 37, 52, 31, 127, 161, 15, 12, 60, 165, 102, 75, 155, 115, 1, 187, 132, 49, 158, 9, 6, 21, 50, 85, 152, 91, 92, 76, 29, 142, 53, 47, 3, 11, 167, 99, 111, 139, 133, 137, 199, 131, 164, 51, 194, 134, 42, 100, 197, 124, 177, 160, 56, 61, 114, 186, 153, 65, 23, 14, 183, 96, 125, 192, 173, 170, 32]
+csv_files_train = [csv_files[i-1] for i in csv_files_train_indices]
+csv_files_holdout_indices = [81, 119, 118, 5, 159, 150, 198, 84, 108, 103, 57, 104, 73, 107, 143, 190, 156, 128, 97, 94, 129, 113, 16, 185, 78, 147, 33, 168, 191, 121, 95, 162, 89, 144, 20, 38, 178, 35, 193, 24]
+csv_files_holdout = [csv_files[i-1] for i in csv_files_holdout_indices]
 
 
 # Use a dictionary comprehension to read each CSV file into a DataFrame
@@ -84,22 +85,30 @@ train_dataframes = {file: pd.read_csv(file) for file in csv_files_train}
 # The keys of the dictionary will be the file names, and the values will be the DataFrames
 hold_out_dataframes = {file: pd.read_csv(file) for file in csv_files_holdout}
 
-print(f"Holdout dataframe:",hold_out_dataframes.keys(), f"Train dataframeL", train_dataframes.keys())
+print(hold_out_dataframes.keys(), train_dataframes.keys())
 
 #ONLY FOR ONSET_ISMIR - ADJUST THE SLICING csv_files[:]
-#csv_files_test = csv_files[5:6]
-#test_dataframes = {file: pd.read_csv(file) for file in csv_files_test}
+csv_files_test_indices = [145, 70, 10, 44, 34, 116, 63, 136, 43, 112, 68, 62, 45, 195, 69, 86, 13, 140, 169, 130, 22, 39, 25, 88, 19, 93, 4, 30, 41, 101, 59, 141, 179, 26, 182, 126, 180, 174, 87, 77]
+csv_files_test = [csv_files[i-1] for i in csv_files_test_indices]
 
+# Use a dictionary comprehension to read each CSV file into a DataFrame
+# The keys of the dictionary will be the file names, and the values will be the DataFrames
+test_dataframes = {file: pd.read_csv(file) for file in csv_files_test}
 
-test_data_dir = os.path.join(project_dir, 'Data', 'test_data')
+'''for filename, df in train_split.items():
+    train_df, hold_out_df = train_test_split(df, test_size=0.1, random_state=17)  # Adjust test_size as needed
+    train_dataframes[filename] = train_df
+    hold_out_dataframes[filename] = hold_out_df'''
+
+#test_data_dir = os.path.join(project_dir, 'Data', 'test_data')
 
 # Use a list comprehension to create a list of all CSV file paths
 #csv_files_test = [f'{test_data_dir}/{file}' for file in os.listdir(test_data_dir) if file.endswith('.csv')]
 
 # Use a list comprehension to create a list of all CSV file paths, limiting to the first two
-csv_files_test = [f'{test_data_dir}/{file}' for file in os.listdir(test_data_dir) if file.endswith('.csv')][:1]
+#csv_files_test = [f'{test_data_dir}/{file}' for file in os.listdir(test_data_dir) if file.endswith('.csv')][:1]
 
-test_dataframes = {file: pd.read_csv(file) for file in csv_files_test}
+#test_dataframes = {file: pd.read_csv(file) for file in csv_files_test}
 
 
 # WARNING - TEST CODE ONLY

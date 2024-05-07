@@ -41,6 +41,8 @@ def compute_and_save_spect_target_dataframes(list_of_csv_paths, list_of_wav_path
 
         # Load the audio file
         y, sr = librosa.load(wav_path)
+        
+        
 
         # Compute the Mel spectrogram
         mel_spectrogram = librosa.feature.melspectrogram(y=y, sr=sr, n_fft=n_fft, hop_length=hop_length,
