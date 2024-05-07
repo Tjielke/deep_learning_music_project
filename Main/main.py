@@ -10,7 +10,7 @@ from sklearn.metrics import roc_auc_score, confusion_matrix, precision_recall_fs
 import os
 import pandas as pd
 from model_build import SpectralCRNN_Reg_Dropout, SpectralCRNN
-from sklearn.model_selection import train_test_split
+
 
 
 
@@ -97,14 +97,14 @@ test_data_dir = os.path.join(project_dir, 'Data', 'test_data')
 #csv_files_test = [f'{test_data_dir}/{file}' for file in os.listdir(test_data_dir) if file.endswith('.csv')]
 
 # Use a list comprehension to create a list of all CSV file paths, limiting to the first two
-#csv_files_test = [f'{test_data_dir}/{file}' for file in os.listdir(test_data_dir) if file.endswith('.csv')][:1]
+csv_files_test = [f'{test_data_dir}/{file}' for file in os.listdir(test_data_dir) if file.endswith('.csv')][:1]
 
-#test_dataframes = {file: pd.read_csv(file) for file in csv_files_test}
+test_dataframes = {file: pd.read_csv(file) for file in csv_files_test}
 
 
 # WARNING - TEST CODE ONLY
 # List all files in the directory and get their sizes
-csv_files_test = [(file, os.path.getsize(os.path.join(test_data_dir, file)))
+'''csv_files_test = [(file, os.path.getsize(os.path.join(test_data_dir, file)))
              for file in os.listdir(test_data_dir)
              if file.endswith('.csv')]
 
@@ -119,7 +119,7 @@ if csv_files_test:  # Ensure there are files in the list
     test_dataframes = {smallest_file: pd.read_csv(smallest_file_path)}
     print(f"Loaded smallest file: {smallest_file}")
 else:
-    print("No CSV files found in the directory.")
+    print("No CSV files found in the directory.")'''
 #TEST CODE ENDS HERE
 
 # Configure tensorboard logger
@@ -180,7 +180,7 @@ process_dataframes(test_dataframes, max_length)
 model = SpectralCRNN_Reg_Dropout()
 # Define optimizer and loss function
 criterion = nn.MSELoss()
-optimizer = torch.optim.Adam([p for p in model.parameters() if p.requires_grad], lr=0.01)
+optimizer = torch.optim.Adam([p for p in model.parameters() if p.requires_grad], lr=0.001)
 scheduler = lr_scheduler.MultiStepLR(optimizer, milestones=[30], gamma=0.1)
 
 
