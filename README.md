@@ -1,5 +1,5 @@
-In order to recreate our work first download the fiddle dataset from this link: https://www.uio.no/ritmo/english/projects/mirage/databases/hf1/index.html. Unzip and configure your path to the file.
- Run the pre-processing.py with your path to the directory of the dataset. Below should be the correct files in a csv format.
+In order to recreate our work first download the fiddle dataset from this link: https://www.uio.no/ritmo/english/projects/mirage/databases/hf1/index.html. Unzip the file. Configure your path to the file
+ and run the pre-processing.py with your configured path to the directory of the dataset in your computer. Below should be the correct files in a csv format.
 
 
 Train Data:
