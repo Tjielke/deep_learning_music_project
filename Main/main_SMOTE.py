@@ -2,16 +2,13 @@ import torch
 import time
 import numpy as np
 from torch import nn
-from torch.autograd import Variable
 from sklearn import metrics
 from torch.optim import lr_scheduler
-import torch.nn.functional as F
 from tensorboard_logger import configure, log_value
 from sklearn.metrics import roc_auc_score, confusion_matrix, precision_recall_fscore_support
 import os
 import pandas as pd
 from model_build import SpectralCRNN_Reg_Dropout, SpectralCRNN
-from sklearn.model_selection import train_test_split
 from imblearn.combine import SMOTEENN
 from imblearn.over_sampling import SMOTE
 import datetime
@@ -72,9 +69,6 @@ project_dir = os.getcwd()
 # Join the project directory path with the train_data directory
 train_data_dir = os.path.join(project_dir, 'Data', 'train_data')
 
-# Use a list comprehension to create a list of all CSV file paths
-#csv_files_train = [f'{train_data_dir}/{file}' for file in os.listdir(train_data_dir) if file.endswith('.csv')]
-
 # Use a list comprehension to create a list of all CSV file paths, limiting to the first two
 csv_files = [f'{train_data_dir}/{file}' for file in os.listdir(train_data_dir) if file.endswith('.csv')]
 
@@ -95,10 +89,7 @@ print(hold_out_dataframes.keys(), train_dataframes.keys())
 
 test_data_dir = os.path.join(project_dir, 'Data', 'test_data')
 
-# Use a list comprehension to create a list of all CSV file paths
-#csv_files_test = [f'{test_data_dir}/{file}' for file in os.listdir(test_data_dir) if file.endswith('.csv')]
-
-# Use a list comprehension to create a list of all CSV file paths, limiting to the first two
+# Use a list comprehension to create a list of all CSV file paths, limiting to the first three
 csv_files_test = [f'{test_data_dir}/{file}' for file in os.listdir(test_data_dir) if file.endswith('.csv')][:3]
 
 test_dataframes = {file: pd.read_csv(file) for file in csv_files_test}
@@ -200,7 +191,7 @@ def apply_custom_smote(features, labels, smote_percentage):
 
     return features_resampled, labels_resampled
 
-def apply_smote(features, labels, percentage=100):
+def apply_smote(features, labels, percentage):
     # Print original class distribution
     original_counts = np.bincount(labels)
     print(f"Original class distribution: {dict(enumerate(original_counts))}")
@@ -232,7 +223,7 @@ print("Shapes:", train_features.shape, train_labels.shape)
 # Flatten features for SMOTE
 train_features_flat = train_features.reshape(train_features.shape[0], -1)
 # Apply SMOTE at 100%
-X_resampled, y_resampled = apply_custom_smote(train_features_flat, train_labels, 100)
+X_resampled, y_resampled = apply_custom_smote(train_features_flat, train_labels, 200)
 # Reshape for model input
 X_resampled = X_resampled.reshape(-1, 1, max_length, X_resampled.shape[1] // max_length)
 
@@ -240,7 +231,7 @@ X_resampled = X_resampled.reshape(-1, 1, max_length, X_resampled.shape[1] // max
 model = SpectralCRNN_Reg_Dropout()
 # Define optimizer and loss function
 criterion = nn.MSELoss()
-optimizer = torch.optim.Adam([p for p in model.parameters() if p.requires_grad], lr=0.01)
+optimizer = torch.optim.Adam([p for p in model.parameters() if p.requires_grad], lr=0.001)
 scheduler = lr_scheduler.MultiStepLR(optimizer, milestones=[30], gamma=0.1)
 
 
@@ -318,7 +309,6 @@ for epoch in range(num_epochs):
         batch_time.update(time.time() - start_time)
         start_time = time.time()
 
-
         #Optional: print progress for the batch
         ''' print('Epoch: [{0}/{1}]\t'
               'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
@@ -353,15 +343,12 @@ for epoch in range(num_epochs):
     log_value('Training Precision', train_precision, epoch)
     log_value('Training Recall', train_recall, epoch)
     log_value('Training F1-Score', train_f1, epoch)
-
+    log_value('Training ROC AUC', train_roc_auc, epoch)
 
     scheduler.step()
 
     # Validation loop
     model.eval()
-
-    # Github metrics - not used
-    losses = AverageMeter()
 
     validation_losses = AverageMeter()  # Reset validation loss meter
     all_val_predictions = []
@@ -382,7 +369,6 @@ for epoch in range(num_epochs):
             targets = torch.tensor(targets, dtype=torch.float32).view(-1, 1)
 
             model.init_hidden(inputs.size(0))  # Initialize hidden state for the model
-            model.eval()  # Set the model to evaluation mode
 
             with torch.no_grad():  # Disable gradient computation for validation
                 outputs = model(inputs)
@@ -437,6 +423,7 @@ for epoch in range(num_epochs):
     log_value('Validation Precision', val_precision, epoch)
     log_value('Validation Recall', val_recall, epoch)
     log_value('Validation F1-Score', val_f1, epoch)
+    log_value('Validation ROC AUC', val_roc_auc, epoch)
 
     if val_r2 > best_val:
         best_val = val_r2
